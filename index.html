@@ -114,9 +114,26 @@ body{
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Company Name</label>
-                <input type="text" class="form-control" id="companyName" required>
+                <label class="form-label">Contact Person</label>
+                <input type="text" class="form-control" id="contactPerson" required>
             </div>
+
+            <div class="col-md-12 mb-3">
+    <label class="form-label">Company Address</label>
+    <textarea
+        class="form-control"
+        id="companyAddress"
+        rows="3"
+        required>
+    </textarea>
+</div>
+            <div class="col-md-6 mb-3">
+    <label class="form-label">Alternate Mobile Number</label>
+    <input
+        type="text"
+        class="form-control"
+        id="alternateMobile">
+</div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email</label>
@@ -134,27 +151,135 @@ body{
             </div>
 
             <div class="col-md-6 mb-3">
+    <label class="form-label">PAN Card Upload</label>
+    <input
+        type="file"
+        class="form-control"
+        id="panFile"
+        accept=".pdf,.jpg,.jpeg,.png">
+</div>
+
+            <div class="col-md-6 mb-3">
                 <label class="form-label">GST Number</label>
                 <input type="text" class="form-control" id="gst">
             </div>
 
             <div class="col-md-6 mb-3">
+    <label class="form-label">GST Certificate Upload</label>
+    <input
+        type="file"
+        class="form-control"
+        id="gstFile"
+        accept=".pdf,.jpg,.jpeg,.png">
+</div>
 
-                <label class="form-label">Service Category</label>
+            <div class="col-md-6 mb-3">
 
-                <select class="form-select" id="service">
+    <label class="form-label">Service Categories</label>
 
-                    <option>Training Partner</option>
-                    <option>Mobilization Partner</option>
-                    <option>Infrastructure Rental</option>
-                    <option>Domain Trainer</option>
-                    <option>Softskill Trainer</option>
-                    <option>Recruitment Partner</option>
-                    <option>Contract Employers</option>
+    <div class="dropdown">
 
-                </select>
+        <button
+            class="btn btn-outline-secondary dropdown-toggle w-100 text-start"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
 
-            </div>
+            Select Service Categories
+
+        </button>
+
+        <ul class="dropdown-menu p-3 w-100">
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Training Partner"
+                           id="service1">
+                    <label class="form-check-label" for="service1">
+                        Training Partner
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Mobilization Partner"
+                           id="service2">
+                    <label class="form-check-label" for="service2">
+                        Mobilization Partner
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Infrastructure Rental"
+                           id="service3">
+                    <label class="form-check-label" for="service3">
+                        Infrastructure Rental
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Domain Trainer"
+                           id="service4">
+                    <label class="form-check-label" for="service4">
+                        Domain Trainer
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Softskill Trainer"
+                           id="service5">
+                    <label class="form-check-label" for="service5">
+                        Softskill Trainer
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Recruitment Partner"
+                           id="service6">
+                    <label class="form-check-label" for="service6">
+                        Recruitment Partner
+                    </label>
+                </div>
+            </li>
+
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input service-checkbox"
+                           type="checkbox"
+                           value="Contract Employers"
+                           id="service7">
+                    <label class="form-check-label" for="service7">
+                        Contract Employers
+                    </label>
+                </div>
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
 
             <div class="col-md-6 mb-3">
 
@@ -171,6 +296,33 @@ body{
             </div>
 
         </div>
+        <hr class="my-4">
+
+<h5>Bank Details</h5>
+
+<div class="row">
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Bank Account Number</label>
+        <input type="text" class="form-control" id="accountNumber">
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Account Holder Name</label>
+        <input type="text" class="form-control" id="accountHolder">
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Bank Name</label>
+        <input type="text" class="form-control" id="bankName">
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label">IFSC Code</label>
+        <input type="text" class="form-control" id="ifsc">
+    </div>
+
+</div>
 
         <button type="submit" class="btn btn-primary">
             Register Vendor
@@ -218,7 +370,7 @@ body{
 
                 <th>ID</th>
                 <th>Vendor</th>
-                <th>Company</th>
+                <th>Contact Person</th>
                 <th>Service</th>
                 <th>Status</th>
 
@@ -292,8 +444,12 @@ function renderTable() {
         <tr>
             <td>${v.id}</td>
             <td>${v.vendor_name}</td>
-            <td>${v.company_name}</td>
-            <td>${v.service}</td>
+            <td>${v.contact_person}</td>
+            <td>${
+    Array.isArray(v.service)
+        ? v.service.join(", ")
+        : v.service
+}</td>
             <td class="${cls}">${v.status}</td>
         </tr>
         `;
@@ -309,13 +465,69 @@ document
 
     e.preventDefault();
 
+    const selectedServices = Array.from(
+    document.querySelectorAll(".service-checkbox:checked")
+).map(cb => cb.value);
+
+const panFile = document.getElementById("panFile").files[0];
+
+let panUrl = "";
+
+if (panFile) {
+
+    const fileName =
+    Date.now() + "_PAN_" + panFile.name;
+
+    const { data, error } =
+    await db.storage
+        .from("vendor-documents")
+        .upload(fileName, panFile);
+
+    console.log("PAN Upload Data:", data);
+    console.log("PAN Upload Error:", error);
+
+    if (!error) {
+        panUrl =
+        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
+    }
+}
+
+const gstFile = document.getElementById("gstFile").files[0];
+
+let gstUrl = "";
+
+if (gstFile) {
+
+    const fileName =
+    Date.now() + "_GST_" + gstFile.name;
+
+    const { data, error } =
+    await db.storage
+        .from("vendor-documents")
+        .upload(fileName, gstFile);
+
+    console.log("GST Upload Data:", data);
+    console.log("GST Upload Error:", error);
+
+    if (!error) {
+        gstUrl =
+        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
+    }
+}
+
     const vendorData = {
 
         vendor_name:
             document.getElementById("vendorName").value,
 
-        company_name:
-            document.getElementById("companyName").value,
+        contact_person:
+    document.getElementById("contactPerson").value,
+
+company_address:
+    document.getElementById("companyAddress").value,
+
+alternate_mobile:
+    document.getElementById("alternateMobile").value,
 
         email:
             document.getElementById("email").value,
@@ -330,11 +542,26 @@ document
             document.getElementById("gst").value,
 
         service:
-            document.getElementById("service").value,
+    selectedServices,
+    account_number:
+    document.getElementById("accountNumber").value,
+
+account_holder:
+    document.getElementById("accountHolder").value,
+
+bank_name:
+    document.getElementById("bankName").value,
+
+ifsc:
+    document.getElementById("ifsc").value,
 
         status:
-            document.getElementById("status").value
+            document.getElementById("status").value,
+            pan_file: panUrl,
+
+gst_file: gstUrl,
     };
+    console.log("Vendor Data:", vendorData);
 
     const { error } = await db
         .from("vendors")
@@ -379,12 +606,12 @@ document
 function downloadCSV(){
 
     let csv =
-    "VendorID,Vendor,Company,Service,Status\n";
+    "VendorID,Vendor,Contact Person,Service,Status\n";
 
     vendors.forEach(v => {
 
         csv +=
-        `${v.id},${v.vendor_name},${v.company_name},${v.service},${v.status}\n`;
+        `${v.id},${v.vendor_name},${v.contact_person},${v.service},${v.status}\n`;
 
     });
 
@@ -407,6 +634,6 @@ function downloadCSV(){
 // Initial load
 loadVendors();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
