@@ -383,9 +383,9 @@ body{
 
 </div>
 <div class="text-center mb-3">
-    <button class="btn btn-success" onclick="downloadCSV()">
-        Download CSV
-    </button>
+    <button class="btn btn-success" onclick="verifyAndDownload()">
+    Download CSV
+</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -606,6 +606,23 @@ console.log("Insert Error:", error);
 btn.innerText = "Register Vendor";
 });
 // CSV Download
+async function verifyAndDownload() {
+
+    const password = prompt(
+        "Enter TMF Admin Password"
+    );
+
+    if (!password) {
+        return;
+    }
+
+    if (password !== "TMF@2026") {
+        alert("Incorrect Password");
+        return;
+    }
+
+    downloadCSV();
+}
 async function downloadCSV() {
 
     const { data, error } = await db
