@@ -322,6 +322,18 @@ body{
                 </div>
             </li>
 
+            <li>
+    <div class="form-check">
+        <input class="form-check-input service-checkbox"
+               type="checkbox"
+               value="Others"
+               id="service8">
+        <label class="form-check-label" for="service8">
+            Others
+        </label>
+    </div>
+</li>
+
         </ul>
 
     </div>
@@ -610,28 +622,31 @@ async function downloadCSV() {
     const vendors = data || [];
 
     let csv =
-"ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity\n";
+"ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
 
     vendors.forEach(v => {
 
         const row = [
-            v.id,
-            v.vendor_name,
-            v.contact_person,
-            v.company_address,
-            v.email,
-            v.mobile,
-            v.alternate_mobile,
-            `="${v.pan ?? ""}"`,
-            v.gst,
-            v.service, 
-            v.account_number,
-            v.account_holder,
-            v.bank_name,
-            v.ifsc,
-            v.agreement_date,
-            v.agreement_validity
-        ]
+    v.id,
+    v.vendor_name,
+    v.contact_person,
+    v.company_address,
+    v.email,
+    v.mobile,
+    v.alternate_mobile,
+    `="${v.pan ?? ""}"`,
+    v.gst,
+    Array.isArray(v.service) ? v.service.join("; ") : v.service,
+    v.account_number,
+    v.account_holder,
+    v.bank_name,
+    v.ifsc,
+    v.agreement_date,
+    v.agreement_validity,
+    v.pan_file,
+    v.gst_file,
+    v.agreement_file
+]
         .map(v => (v ?? "").toString().replace(/"/g, '""')) // escape quotes
         .map(v => `"${v}"`)
         .join(",");
