@@ -131,22 +131,31 @@ body{
     
             <div class="col-md-6 mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" id="email">
+                <input type="email" class="form-control" id="email" required>
             </div>
             <div class="col-md-6 mb-3">
     <label class="form-label">Mobile</label>
-    <input type="text" class="form-control" id="mobile">
+    <input
+    type="tel"
+    class="form-control"
+    id="mobile"
+    pattern="[0-9]{10}"
+    maxlength="10"
+    required>
 </div>
             <div class="col-md-6 mb-3">
     <label class="form-label">Alternate Mobile Number</label>
     <input
-        type="text"
-        class="form-control"
-        id="alternateMobile">
+    type="tel"
+    class="form-control"
+    id="alternateMobile"
+    pattern="[0-9]{10}"
+    maxlength="10"
+    required>
 </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">PAN Number</label>
-                <input type="text" class="form-control" id="pan">
+                <input type="text" class="form-control" id="pan" required>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -155,21 +164,60 @@ body{
         type="file"
         class="form-control"
         id="panFile"
-        accept=".pdf,.jpg,.jpeg,.png">
+        accept=".pdf,.jpg,.jpeg,.png" required>
 </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">GST Number</label>
+                <label class="form-label">GST Number (Optional)</label>
                 <input type="text" class="form-control" id="gst">
             </div>
 
             <div class="col-md-6 mb-3">
-    <label class="form-label">GST Certificate Upload</label>
+    <label class="form-label">GST Certificate Upload (Optional)</label>
     <input
         type="file"
         class="form-control"
         id="gstFile"
         accept=".pdf,.jpg,.jpeg,.png">
+</div>
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">
+        Upload Signed Agreement / Contract
+    </label>
+    <input
+        type="file"
+        class="form-control"
+        id="agreementFile"
+        accept=".pdf,.jpg,.jpeg,.png"
+        required>
+</div>
+<div class="col-md-6 mb-3">
+    <label class="form-label">
+        Date of Agreement
+    </label>
+    <input
+        type="date"
+        class="form-control"
+        id="agreementDate"
+        required>
+</div>
+<div class="col-md-6 mb-3">
+    <label class="form-label">
+        Validity of Agreement
+    </label>
+
+    <select
+        class="form-select"
+        id="agreementValidity"
+        required>
+
+        <option value="">Select Validity</option>
+        <option value="1 Year">1 Year</option>
+        <option value="2 Years">2 Years</option>
+        <option value="3 Years">3 Years</option>
+
+    </select>
 </div>
 
             <div class="col-md-6 mb-3">
@@ -279,21 +327,6 @@ body{
     </div>
 
 </div>
-
-            <div class="col-md-6 mb-3">
-
-                <label class="form-label">Status</label>
-
-                <select class="form-select" id="status">
-
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Rejected</option>
-
-                </select>
-
-            </div>
-
         </div>
         <hr class="my-4">
 
@@ -303,22 +336,29 @@ body{
 
     <div class="col-md-6 mb-3">
         <label class="form-label">Bank Account Number</label>
-        <input type="text" class="form-control" id="accountNumber">
+        <input
+    type="text"
+    class="form-control"
+    id="accountNumber"
+    inputmode="numeric"
+    maxlength="18"
+    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+    required>
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label">Account Holder Name</label>
-        <input type="text" class="form-control" id="accountHolder">
+        <input type="text" class="form-control" id="accountHolder" required>
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label">Bank Name</label>
-        <input type="text" class="form-control" id="bankName">
+        <input type="text" class="form-control" id="bankName" required>
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label">IFSC Code</label>
-        <input type="text" class="form-control" id="ifsc">
+        <input type="text" class="form-control" id="ifsc" required>
     </div>
 
 </div>
@@ -330,61 +370,10 @@ body{
     </form>
 
 </div>
-
-<!-- Vendor List -->
-
-<div class="card shadow p-4">
-
-    <div class="row mb-3">
-
-        <div class="col-md-6">
-
-            <input
-                type="text"
-                id="searchVendor"
-                class="form-control"
-                placeholder="Search Vendor">
-
-        </div>
-
-        <div class="col-md-6 text-end">
-
-            <button
-                class="btn btn-success"
-                onclick="downloadCSV()">
-
-                Download CSV
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <table class="table table-bordered table-hover">
-
-        <thead class="table-dark">
-
-            <tr>
-
-                <th>ID</th>
-                <th>Vendor</th>
-                <th>Contact Person</th>
-                <th>Service</th>
-                <th>Status</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody id="vendorTable">
-
-        </tbody>
-
-    </table>
-
-</div>
-
+<div class="text-center mb-3">
+    <button class="btn btn-success" onclick="downloadCSV()">
+        Download CSV
+    </button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -404,71 +393,56 @@ const db = createClient(
 
 let vendors = [];
 
-// Load vendors from Supabase
-async function loadVendors() {
-
-    const { data, error } = await db
-        .from("vendors")
-        .select("*")
-        .order("id", { ascending: false });
-
-    if (error) {
-        console.error("Load Error:", error);
-        return;
-    }
-
-    vendors = data || [];
-    renderTable();
-}
-
-// Render table
-function renderTable() {
-
-    let html = "";
-
-    vendors.forEach(v => {
-
-        let cls = "";
-
-        if (v.status === "Pending")
-            cls = "status-pending";
-
-        if (v.status === "Approved")
-            cls = "status-approved";
-
-        if (v.status === "Rejected")
-            cls = "status-rejected";
-
-        html += `
-        <tr>
-            <td>${v.id}</td>
-            <td>${v.vendor_name}</td>
-            <td>${v.contact_person}</td>
-            <td>${
-    Array.isArray(v.service)
-        ? v.service.join(", ")
-        : v.service
-}</td>
-            <td class="${cls}">${v.status}</td>
-        </tr>
-        `;
-    });
-
-    document.getElementById("vendorTable").innerHTML = html;
-}
-
 // Form submit
 document
 .getElementById("vendorForm")
 .addEventListener("submit", async function(e){
-
     e.preventDefault();
+    const btn = document.querySelector("button[type='submit']");
+btn.disabled = true;
+btn.innerText = "Submitting...";
+    const accountNumber =
+document.getElementById("accountNumber").value.trim();
 
-    const selectedServices = Array.from(
+if (!/^\d+$/.test(accountNumber)) {
+    alert("Bank Account Number must contain only numbers.");
+    return;
+}
+    if (!this.checkValidity()) {
+    this.reportValidity();
+    return;
+}
+
+const mobile =
+document.getElementById("mobile").value.trim();
+
+const alternateMobile =
+document.getElementById("alternateMobile").value.trim();
+
+if (!/^\d{10}$/.test(mobile)) {
+    alert("Mobile Number must contain exactly 10 digits.");
+    return;
+}
+
+if (!/^\d{10}$/.test(alternateMobile)) {
+    alert("Alternate Mobile Number must contain exactly 10 digits.");
+    return;
+}
+
+const selectedServices = Array.from(
     document.querySelectorAll(".service-checkbox:checked")
 ).map(cb => cb.value);
 
+if (selectedServices.length === 0) {
+    alert("Please select at least one Service Category.");
+    return;
+}
+
 const panFile = document.getElementById("panFile").files[0];
+if (!panFile) {
+    alert("PAN file is required");
+    return;
+}
 
 let panUrl = "";
 
@@ -514,6 +488,32 @@ if (gstFile) {
     }
 }
 
+const agreementFile =
+document.getElementById("agreementFile").files[0];
+if (!agreementFile) {
+    alert("Agreement file is required");
+    return;
+}
+
+let agreementUrl = "";
+
+if (agreementFile) {
+
+    const fileName =
+    Date.now() + "_AGREEMENT_" + agreementFile.name;
+
+    const { error } =
+    await db.storage
+        .from("vendor-documents")
+        .upload(fileName, agreementFile);
+
+    if (!error) {
+
+        agreementUrl =
+        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
+    }
+}
+
     const vendorData = {
 
         vendor_name:
@@ -548,28 +548,39 @@ alternate_mobile:
 account_holder:
     document.getElementById("accountHolder").value,
 
+agreement_file: agreementUrl,
+
+agreement_date:
+document.getElementById("agreementDate").value,
+
+agreement_validity:
+document.getElementById("agreementValidity").value,
+
 bank_name:
     document.getElementById("bankName").value,
 
 ifsc:
     document.getElementById("ifsc").value,
-
-        status:
-            document.getElementById("status").value,
             pan_file: panUrl,
 
 gst_file: gstUrl,
     };
     console.log("Vendor Data:", vendorData);
 
-    const { error } = await db
-        .from("vendors")
-        .insert([vendorData]);
+    const { data, error } = await db
+    .from("vendors")
+    .insert([vendorData])
+    .select();
+
+console.log("Inserted Data:", data);
+console.log("Insert Error:", error);
 
     if (error) {
 
         console.error("Insert Error:", error);
         alert("Error saving vendor");
+        btn.disabled = false;
+    btn.innerText = "Register Vendor";
 
         return;
     }
@@ -579,59 +590,64 @@ gst_file: gstUrl,
     this.reset();
 
     loadVendors();
+    btn.disabled = false;
+btn.innerText = "Register Vendor";
 });
-
-// Search
-document
-.getElementById("searchVendor")
-.addEventListener("keyup", function(){
-
-    let value = this.value.toLowerCase();
-
-    let rows =
-    document.querySelectorAll("#vendorTable tr");
-
-    rows.forEach(r => {
-
-        r.style.display =
-        r.innerText.toLowerCase().includes(value)
-        ? ""
-        : "none";
-    });
-
-});
-
 // CSV Download
-function downloadCSV(){
+async function downloadCSV() {
+
+    const { data, error } = await db
+        .from("vendors")
+        .select("*")
+        .order("id", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        alert("Failed to fetch data");
+        return;
+    }
+
+    const vendors = data || [];
 
     let csv =
-    "VendorID,Vendor,Contact Person,Service,Status\n";
+"ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity\n";
 
     vendors.forEach(v => {
 
-        csv +=
-        `${v.id},${v.vendor_name},${v.contact_person},${v.service},${v.status}\n`;
+        const row = [
+            v.id,
+            v.vendor_name,
+            v.contact_person,
+            v.company_address,
+            v.email,
+            v.mobile,
+            v.alternate_mobile,
+            `="${v.pan ?? ""}"`,
+            v.gst,
+            v.service, 
+            v.account_number,
+            v.account_holder,
+            v.bank_name,
+            v.ifsc,
+            v.agreement_date,
+            v.agreement_validity
+        ]
+        .map(v => (v ?? "").toString().replace(/"/g, '""')) // escape quotes
+        .map(v => `"${v}"`)
+        .join(",");
 
+        csv += row + "\n";
     });
 
-    let blob = new Blob(
-        [csv],
-        { type:"text/csv" }
-    );
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
 
-    let url =
-    window.URL.createObjectURL(blob);
-
-    let a =
-    document.createElement("a");
-
+    const a = document.createElement("a");
     a.href = url;
     a.download = "vendors.csv";
     a.click();
 }
 
-// Initial load
-loadVendors();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
