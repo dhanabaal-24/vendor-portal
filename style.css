@@ -28,11 +28,6 @@ body{
     font-weight:bold;
 }
 
-input[type="file"]{
-    border:2px dashed #0d47a1;
-    background:#f7fbff;
-    padding:15px;
-}
 
 .form-label i{
     color:#0d47a1; ;
@@ -75,12 +70,6 @@ input[type="file"]{
     overflow-y:auto;
 }
 
-input[type="file"]{
-    width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
 .website-title{
     font-size:34px;
     font-weight:700;
@@ -114,25 +103,7 @@ input[type="file"]{
    SECTION HEADINGS
 =================================== */
 
-.card h4,
-.card h5{
-    text-align:center;
-    font-weight:700;
-    color:#0d47a1;
-    margin-bottom:25px;
-    position:relative;
-}
 
-.card h4::after,
-.card h5::after{
-    content:'';
-    width:70px;
-    height:4px;
-    background:#0d6efd;
-    display:block;
-    margin:10px auto;
-    border-radius:10px;
-}
 
 /* ===================================
    FORM LABELS
@@ -160,8 +131,9 @@ input[type="file"]{
 
 .form-control:focus,
 .form-select:focus{
-    border-color:#0d6efd;
-    box-shadow:0 0 0 0.2rem rgba(13,110,253,.15);
+    background:#fff;
+    border-color:#1565c0;
+    box-shadow:0 0 0 4px rgba(21,101,192,.12);
 }
 
 /* ===================================
@@ -169,7 +141,15 @@ input[type="file"]{
 =================================== */
 
 input[type="file"]{
-    padding:10px;
+    border:2px dashed #1565c0;
+    border-radius:15px;
+    background:#f8fbff;
+    padding:20px;
+    transition:.3s;
+}
+
+input[type="file"]:hover{
+    background:#eef5ff;
 }
 
 /* ===================================
@@ -412,10 +392,7 @@ hr{
         padding:10px;
     }
 
-    .card h4,
-    .card h5{
-        font-size:20px;
-    }
+    
 
 }
 
@@ -500,6 +477,113 @@ hr{
 
 }
 
+.card h4,
+.card h5{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.card h4::before,
+.card h5::before{
+    content:"";
+    flex:1;
+    height:2px;
+    background:#e3eaf5;
+}
+
+.card h4::after,
+.card h5::after{
+    content:"";
+    flex:1;
+    height:2px;
+    background:#e3eaf5;
+}
+
+
+.success-checkmark{
+    width:80px;
+    height:80px;
+    margin:0 auto;
+}
+
+.check-icon{
+    width:80px;
+    height:80px;
+    position:relative;
+    border-radius:50%;
+    box-sizing:content-box;
+    border:4px solid #4CAF50;
+}
+
+.check-icon::before{
+    top:3px;
+    left:-2px;
+    width:30px;
+    transform-origin:100% 50%;
+    border-radius:100px 0 0 100px;
+}
+
+.check-icon::after{
+    top:0;
+    left:30px;
+    width:60px;
+    transform-origin:0 50%;
+    border-radius:0 100px 100px 0;
+}
+
+.check-icon::before,
+.check-icon::after{
+    content:'';
+    height:100px;
+    position:absolute;
+    background:#fff;
+    transform:rotate(-45deg);
+}
+
+.icon-line{
+    height:5px;
+    background:#4CAF50;
+    display:block;
+    border-radius:2px;
+    position:absolute;
+    z-index:10;
+}
+
+.line-tip{
+    top:46px;
+    left:14px;
+    width:25px;
+    transform:rotate(45deg);
+    animation:icon-line-tip .75s;
+}
+
+.line-long{
+    top:38px;
+    right:8px;
+    width:47px;
+    transform:rotate(-45deg);
+    animation:icon-line-long .75s;
+}
+
+@keyframes icon-line-tip{
+    from{
+        width:0;
+    }
+    to{
+        width:25px;
+    }
+}
+
+@keyframes icon-line-long{
+    from{
+        width:0;
+    }
+    to{
+        width:47px;
+    }
+}
 /* Small Phones */
 @media (max-width:480px){
 
@@ -509,11 +593,6 @@ hr{
 
     .navbar-custom p{
         font-size:12px;
-    }
-
-    .card h4,
-    .card h5{
-        font-size:20px;
     }
 
 }
