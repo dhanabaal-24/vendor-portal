@@ -68,6 +68,52 @@ body { background:#f4f6f9; }
     background: #1565c0;
     color: #fff;
 }
+
+/* Password Modal */
+.pwd-modal-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #1e3d6c, #1565c0);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    color: white;
+}
+.pwd-input-wrap {
+    position: relative;
+}
+.pwd-input-wrap .form-control {
+    padding-right: 44px;
+    border-radius: 10px;
+    border: 2px solid #dbe4f0;
+    font-size: 15px;
+    padding: 12px 44px 12px 14px;
+    letter-spacing: 2px;
+}
+.pwd-input-wrap .form-control:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 0 4px rgba(21,101,192,.12);
+}
+.pwd-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 18px;
+}
+.pwd-toggle:hover { color: #1565c0; }
+#pwdError {
+    display: none;
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 6px;
+}
+#pwdError.show { display: block; }
 </style>
 </head>
 
@@ -647,11 +693,63 @@ document.getElementById("vendorForm").addEventListener("submit", async function(
 });
 
 // ─── CSV Download ─────────────────────────────────────────
-async function verifyAndDownload() {
-    const password = prompt("Enter TMF Admin Password");
-    if (!password) return;
-    if (password !== "TMF@2026") { alert("Incorrect Password"); return; }
-    downloadCSV();
+function verifyAndDownload() {
+    resetPwdModal();
+    const modal = new bootstrap.Modal(document.getElementById("passwordModal"));
+    modal.show();
+    setTimeout(() => document.getElementById("pwdInput").focus(), 400);
+}
+
+function togglePwdVisibility() {
+    const input = document.getElementById("pwdInput");
+    const icon  = document.getElementById("pwdToggleIcon");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.replace("bi-eye-slash", "bi-eye");
+    }
+}
+
+function resetPwdModal() {
+    document.getElementById("pwdInput").value = "";
+    document.getElementById("pwdInput").type  = "password";
+    document.getElementById("pwdToggleIcon").classList.replace("bi-eye-slash","bi-eye");
+    document.getElementById("pwdError").classList.remove("show");
+    const btn = document.getElementById("pwdSubmitBtn");
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-download me-2"></i>Download';
+}
+
+async function submitPassword() {
+    const pwd   = document.getElementById("pwdInput").value;
+    const errEl = document.getElementById("pwdError");
+    const btn   = document.getElementById("pwdSubmitBtn");
+
+    if (!pwd) {
+        errEl.classList.add("show");
+        errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Please enter the password.';
+        return;
+    }
+
+    if (pwd !== "TMF@2026") {
+        errEl.classList.add("show");
+        errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.';
+        document.getElementById("pwdInput").value = "";
+        document.getElementById("pwdInput").focus();
+        const input = document.getElementById("pwdInput");
+        input.style.borderColor = "#dc3545";
+        setTimeout(() => { input.style.borderColor = ""; }, 1500);
+        return;
+    }
+
+    errEl.classList.remove("show");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Downloading...';
+    bootstrap.Modal.getInstance(document.getElementById("passwordModal")).hide();
+    resetPwdModal();
+    await downloadCSV();
 }
 
 async function downloadCSV() {
@@ -678,6 +776,41 @@ async function downloadCSV() {
     a.click();
 }
 </script>
+
+
+<!-- Password Modal for CSV Download -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+        <div class="modal-content border-0 shadow-lg p-4" style="border-radius:20px;">
+
+            <div class="pwd-modal-icon">
+                <i class="bi bi-lock-fill"></i>
+            </div>
+
+            <h5 class="text-center fw-bold mb-1" style="color:#1e3d6c;">Admin Access Required</h5>
+            <p class="text-center text-muted small mb-4">Enter the TMF Admin Password to download vendor data.</p>
+
+            <div class="pwd-input-wrap mb-1">
+                <input type="password" class="form-control" id="pwdInput" placeholder="Enter password"
+                    onkeydown="if(event.key==='Enter') submitPassword()">
+                <i class="bi bi-eye pwd-toggle" id="pwdToggleIcon" onclick="togglePwdVisibility()"></i>
+            </div>
+            <div id="pwdError">
+                <i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal" onclick="resetPwdModal()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary flex-fill" id="pwdSubmitBtn" onclick="submitPassword()">
+                    <i class="bi bi-download me-2"></i>Download
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
