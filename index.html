@@ -1,797 +1,683 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="style.css">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Vendor Registration Portal</title>
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+body { background:#f4f6f9; }
+.navbar-custom { background:#fff; border:none; border-radius:15px; }
+.logo { height:35px; width:auto; }
+.website-title { font-size:30px; font-weight:700; color:#212529; margin-bottom:5px; }
+.card { border:none; border-radius:15px; }
+.status-pending { color:#ff9800; font-weight:bold; }
+.status-approved { color:green; font-weight:bold; }
+.status-rejected { color:red; font-weight:bold; }
 
-body{
-    background:#f4f6f9;
+/* Edit token box */
+.token-box {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 2px solid #4caf50;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-top: 18px;
+}
+.token-box h6 { color: #2e7d32; font-weight: 700; font-size: 15px; }
+.token-value {
+    font-family: monospace;
+    font-size: 15px;
+    background: #fff;
+    border: 1px dashed #81c784;
+    border-radius: 8px;
+    padding: 8px 14px;
+    letter-spacing: 1px;
+    word-break: break-all;
+    color: #1b5e20;
+}
+.copy-btn {
+    cursor: pointer;
+    color: #388e3c;
+    font-size: 18px;
+    transition: transform .2s;
+}
+.copy-btn:hover { transform: scale(1.2); }
+
+/* Edit mode banner */
+#editModeBanner {
+    display: none;
+    background: linear-gradient(90deg, #fff3e0, #ffe0b2);
+    border-left: 5px solid #ff9800;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    color: #e65100;
 }
 
-/* Navbar Header */
-
-.navbar-custom{
-    background:#fff;
-    border:none;
-    border-radius:15px;
+/* Tab pills */
+.mode-tabs .nav-link {
+    border-radius: 10px;
+    font-weight: 600;
+    color: #1565c0;
 }
-
-.logo{
-    height:35px;
-    width:auto;
+.mode-tabs .nav-link.active {
+    background: #1565c0;
+    color: #fff;
 }
-
-.website-title{
-    font-size:30px;
-    font-weight:700;
-    color:#212529;
-    margin-bottom:5px;
-}
-
-.card{
-    border:none;
-    border-radius:15px;
-}
-
-.status-pending{
-    color:#ff9800;
-    font-weight:bold;
-}
-
-.status-approved{
-    color:green;
-    font-weight:bold;
-}
-
-.status-rejected{
-    color:red;
-    font-weight:bold;
-}
-
 </style>
-
 </head>
 
 <body>
-
 <div class="container-fluid py-3">
-    <div class="container">
+<div class="container">
 
 <!-- Header -->
-
 <div class="card shadow-sm navbar-custom p-3 mb-4">
-
     <div class="row align-items-center">
-
-        <!-- Logo Left -->
-
         <div class="col-lg-2 col-md-3 col-12 text-center mb-3 mb-md-0">
             <img src="logo.png" class="logo" alt="Logo">
         </div>
-
-        <!-- Heading Center -->
-
         <div class="col-lg-8 col-md-6 col-12 text-center">
-
-            <h1 class="website-title">
-                Vendor Registration Portal
-            </h1>
-
-            <p class="text-muted mb-0">
-                The Ma Foi Foundation
-            </p>
-
+            <h1 class="website-title">Vendor Registration Portal</h1>
+            <p class="text-muted mb-0">The Ma Foi Foundation</p>
         </div>
-
         <div class="col-lg-2 col-md-3 d-none d-md-block"></div>
     </div>
-
 </div>
 
-<!-- Registration Form -->
-
-<div class="card shadow p-4 mb-4">
-
-    <h4>
-    <i class="bi bi-building-fill me-2"></i>
-    Vendor Registration
-</h4>
-<div class="d-flex justify-content-between mb-2 small fw-bold">
-    <span>Vendor Details</span>
-    <span>Documents</span>
-    <span>Bank Details</span>
+<!-- Mode Tabs -->
+<div class="card shadow-sm p-3 mb-4">
+    <ul class="nav nav-pills mode-tabs justify-content-center gap-2" id="modeTabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-register" href="#" onclick="switchMode('register'); return false;">
+                <i class="bi bi-person-plus-fill me-2"></i>New Registration
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-edit" href="#" onclick="switchMode('edit-lookup'); return false;">
+                <i class="bi bi-pencil-square me-2"></i>Edit My Submission
+            </a>
+        </li>
+    </ul>
 </div>
 
-<div class="progress mb-4" style="height:10px;">
-    <div class="progress-bar bg-primary" style="width:33%"></div>
+<!-- Edit Lookup Panel -->
+<div id="editLookupPanel" class="card shadow p-4 mb-4" style="display:none;">
+    <h4><i class="bi bi-search me-2"></i>Find Your Submission</h4>
+    <p class="text-muted small">Enter the email and edit token you received when you registered.</p>
+    <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+            <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Registered Email <span class="required">*</span></label>
+            <input type="email" class="form-control" id="lookupEmail" placeholder="your@email.com">
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+            <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit Token <span class="required">*</span></label>
+            <input type="text" class="form-control" id="lookupToken" placeholder="Paste your edit token here" style="font-family:monospace;">
+        </div>
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary" onclick="lookupVendor()">
+            <i class="bi bi-search me-2"></i>Find My Submission
+        </button>
+    </div>
+    <div id="lookupError" class="alert alert-danger mt-3" style="display:none;"></div>
 </div>
+
+<!-- Registration / Edit Form -->
+<div class="card shadow p-4 mb-4" id="formCard">
+
+    <div id="editModeBanner">
+        <i class="bi bi-pencil-square me-2"></i>
+        Edit Mode — You are updating your existing submission. Changes will overwrite your previous data.
+        <button class="btn btn-sm btn-outline-warning ms-3" onclick="cancelEdit()">
+            <i class="bi bi-x-circle me-1"></i>Cancel Edit
+        </button>
+    </div>
+
+    <h4><i class="bi bi-building-fill me-2"></i>Vendor Registration</h4>
+
+    <div class="d-flex justify-content-between mb-2 small fw-bold">
+        <span>Vendor Details</span>
+        <span>Documents</span>
+        <span>Bank Details</span>
+    </div>
+    <div class="progress mb-4" style="height:10px;">
+        <div class="progress-bar bg-primary" style="width:33%"></div>
+    </div>
 
     <form id="vendorForm">
-
         <div class="row">
-
             <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">
-    <i class="bi bi-building-fill me-2"></i>
-    Vendor Name <span class="required">*</span>
-</label>
+                <label class="form-label"><i class="bi bi-building-fill me-2"></i>Vendor Name <span class="required">*</span></label>
                 <input type="text" class="form-control" id="vendorName" required>
             </div>
-
             <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">
-    <i class="bi bi-person-fill me-2"></i>
-    Contact Person <span class="required">*</span>
-</label>
+                <label class="form-label"><i class="bi bi-person-fill me-2"></i>Contact Person <span class="required">*</span></label>
                 <input type="text" class="form-control" id="contactPerson" required>
             </div>
-
             <div class="col-md-12 mb-3">
-    <label class="form-label">
-    <i class="bi bi-geo-alt-fill me-2"></i>
-    Company Address <span class="required">*</span>
-</label>
-    <textarea
-        class="form-control"
-        id="companyAddress"
-        rows="3"
-        required>
-    </textarea>
-</div>
-    
+                <label class="form-label"><i class="bi bi-geo-alt-fill me-2"></i>Company Address <span class="required">*</span></label>
+                <textarea class="form-control" id="companyAddress" rows="3" required></textarea>
+            </div>
             <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">
-    <i class="bi bi-envelope-fill me-2"></i>
-    Email Address <span class="required">*</span>
-</label>
+                <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Email Address <span class="required">*</span></label>
                 <input type="email" class="form-control" id="email" required>
             </div>
             <div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-telephone-fill me-2"></i>
-    Mobile Number <span class="required">*</span>
-</label>
-    <input
-    type="tel"
-    class="form-control"
-    id="mobile"
-    pattern="[0-9]{10}"
-    maxlength="10"
-    required>
-</div>
+                <label class="form-label"><i class="bi bi-telephone-fill me-2"></i>Mobile Number <span class="required">*</span></label>
+                <input type="tel" class="form-control" id="mobile" pattern="[0-9]{10}" maxlength="10" required>
+            </div>
             <div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-phone-fill me-2"></i>
-    Alternate Mobile Number <span class="required">*</span>
-</label>
-    <input
-    type="tel"
-    class="form-control"
-    id="alternateMobile"
-    pattern="[0-9]{10}"
-    maxlength="10"
-    required>
-</div>
+                <label class="form-label"><i class="bi bi-phone-fill me-2"></i>Alternate Mobile Number <span class="required">*</span></label>
+                <input type="tel" class="form-control" id="alternateMobile" pattern="[0-9]{10}" maxlength="10" required>
+            </div>
             <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">
-    <i class="bi bi-credit-card-2-front-fill me-2"></i>
-    PAN Number <span class="required">*</span>
-</label>
+                <label class="form-label"><i class="bi bi-credit-card-2-front-fill me-2"></i>PAN Number <span class="required">*</span></label>
                 <input type="text" class="form-control" id="pan" required>
             </div>
-
             <div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-file-earmark-arrow-up-fill me-2"></i>
-    PAN Card Upload <span class="required">*</span>
-</label>
-    <input
-        type="file"
-        class="form-control"
-        id="panFile"
-        accept=".pdf,.jpg,.jpeg,.png" required>
-</div>
-
+                <label class="form-label"><i class="bi bi-file-earmark-arrow-up-fill me-2"></i>PAN Card Upload <span class="required">*</span></label>
+                <input type="file" class="form-control" id="panFile" accept=".pdf,.jpg,.jpeg,.png">
+                <div id="panFileHint" class="form-text text-muted" style="display:none;">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Existing file kept. Upload a new one only if you want to replace it.
+                </div>
+            </div>
             <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">
-    <i class="bi bi-receipt-cutoff me-2"></i>
-    GST Number (Optional)
-</label>
+                <label class="form-label"><i class="bi bi-receipt-cutoff me-2"></i>GST Number (Optional)</label>
                 <input type="text" class="form-control" id="gst">
             </div>
-
             <div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-cloud-upload-fill me-2"></i>
-    GST Certificate Upload (Optional)
-</label>
-    <input
-        type="file"
-        class="form-control"
-        id="gstFile"
-        accept=".pdf,.jpg,.jpeg,.png">
-</div>
-
-<div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-file-earmark-text-fill me-2"></i>
-    Upload Signed Agreement / Contract
-    <span class="required">*</span>
-</label>
-    <input
-        type="file"
-        class="form-control"
-        id="agreementFile"
-        accept=".pdf,.jpg,.jpeg,.png"
-        required>
-</div>
-<div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-calendar-event-fill me-2"></i>
-    Date of Agreement <span class="required">*</span>
-</label>
-    <input
-        type="date"
-        class="form-control"
-        id="agreementDate"
-        required>
-</div>
-<div class="col-12 col-md-6 mb-3">
-    <label class="form-label">
-    <i class="bi bi-clock-history me-2"></i>
-    Validity of Agreement <span class="required">*</span>
-</label>
-
-    <select
-        class="form-select"
-        id="agreementValidity"
-        required>
-
-        <option value="">Select Validity</option>
-        <option value="1 Year">1 Year</option>
-        <option value="2 Years">2 Years</option>
-        <option value="3 Years">3 Years</option>
-
-    </select>
-</div>
-
+                <label class="form-label"><i class="bi bi-cloud-upload-fill me-2"></i>GST Certificate Upload (Optional)</label>
+                <input type="file" class="form-control" id="gstFile" accept=".pdf,.jpg,.jpeg,.png">
+                <div id="gstFileHint" class="form-text text-muted" style="display:none;">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Existing file kept. Upload a new one only if you want to replace it.
+                </div>
+            </div>
             <div class="col-12 col-md-6 mb-3">
-
-    <label class="form-label">
-    <i class="bi bi-briefcase-fill me-2"></i>
-    Service Categories <span class="required">*</span>
-</label>
-
-    <div class="dropdown">
-
-        <button
-            class="btn btn-outline-secondary dropdown-toggle w-100 text-start"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false">
-
-            Select Service Categories
-
-        </button>
-
-        <ul class="dropdown-menu p-3 w-100">
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Training Partner"
-                           id="service1">
-                    <label class="form-check-label" for="service1">
-                        Training Partner
-                    </label>
+                <label class="form-label"><i class="bi bi-file-earmark-text-fill me-2"></i>Upload Signed Agreement / Contract <span class="required">*</span></label>
+                <input type="file" class="form-control" id="agreementFile" accept=".pdf,.jpg,.jpeg,.png">
+                <div id="agreementFileHint" class="form-text text-muted" style="display:none;">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Existing file kept. Upload a new one only if you want to replace it.
                 </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Mobilization Partner"
-                           id="service2">
-                    <label class="form-check-label" for="service2">
-                        Mobilization Partner
-                    </label>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-calendar-event-fill me-2"></i>Date of Agreement <span class="required">*</span></label>
+                <input type="date" class="form-control" id="agreementDate" required>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-clock-history me-2"></i>Validity of Agreement <span class="required">*</span></label>
+                <select class="form-select" id="agreementValidity" required>
+                    <option value="">Select Validity</option>
+                    <option value="1 Year">1 Year</option>
+                    <option value="2 Years">2 Years</option>
+                    <option value="3 Years">3 Years</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-briefcase-fill me-2"></i>Service Categories <span class="required">*</span></label>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Select Service Categories
+                    </button>
+                    <ul class="dropdown-menu p-3 w-100">
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Training Partner" id="service1"><label class="form-check-label" for="service1">Training Partner</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Mobilization Partner" id="service2"><label class="form-check-label" for="service2">Mobilization Partner</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Infrastructure Rental" id="service3"><label class="form-check-label" for="service3">Infrastructure Rental</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Domain Trainer" id="service4"><label class="form-check-label" for="service4">Domain Trainer</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Softskill Trainer" id="service5"><label class="form-check-label" for="service5">Softskill Trainer</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Recruitment Partner" id="service6"><label class="form-check-label" for="service6">Recruitment Partner</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Contract Roll" id="service7"><label class="form-check-label" for="service7">Contract Roll</label></div></li>
+                        <li><div class="form-check"><input class="form-check-input service-checkbox" type="checkbox" value="Others" id="service8"><label class="form-check-label" for="service8">Others</label></div></li>
+                    </ul>
                 </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Infrastructure Rental"
-                           id="service3">
-                    <label class="form-check-label" for="service3">
-                        Infrastructure Rental
-                    </label>
-                </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Domain Trainer"
-                           id="service4">
-                    <label class="form-check-label" for="service4">
-                        Domain Trainer
-                    </label>
-                </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Softskill Trainer"
-                           id="service5">
-                    <label class="form-check-label" for="service5">
-                        Softskill Trainer
-                    </label>
-                </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Recruitment Partner"
-                           id="service6">
-                    <label class="form-check-label" for="service6">
-                        Recruitment Partner
-                    </label>
-                </div>
-            </li>
-
-            <li>
-                <div class="form-check">
-                    <input class="form-check-input service-checkbox"
-                           type="checkbox"
-                           value="Contract Roll"
-                           id="service7">
-                    <label class="form-check-label" for="service7">
-                        Contract Roll
-                    </label>
-                </div>
-            </li>
-
-            <li>
-    <div class="form-check">
-        <input class="form-check-input service-checkbox"
-               type="checkbox"
-               value="Others"
-               id="service8">
-        <label class="form-check-label" for="service8">
-            Others
-        </label>
-    </div>
-</li>
-
-        </ul>
-
-    </div>
-
-</div>
+            </div>
         </div>
+
         <hr class="my-4">
+        <h5><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
+        <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-bank me-2"></i>Bank Account Number <span class="required">*</span></label>
+                <input type="text" class="form-control" id="accountNumber" inputmode="numeric" maxlength="18" oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-person-vcard-fill me-2"></i>Account Holder Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="accountHolder" required>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-bank2 me-2"></i>Bank Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="bankName" required>
+            </div>
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-shield-check me-2"></i>IFSC Code <span class="required">*</span></label>
+                <input type="text" class="form-control" id="ifsc" required>
+            </div>
+        </div>
 
-<h5>
-    <i class="bi bi-bank2 me-2"></i>
-    Bank Details
-</h5>
-
-<div class="row">
-
-    <div class="col-12 col-md-6 mb-3">
-        <label class="form-label">
-    <i class="bi bi-bank me-2"></i>
-    Bank Account Number <span class="required">*</span>
-</label>
-        <input
-    type="text"
-    class="form-control"
-    id="accountNumber"
-    inputmode="numeric"
-    maxlength="18"
-    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-    required>
-    </div>
-
-    <div class="col-12 col-md-6 mb-3">
-        <label class="form-label">
-    <i class="bi bi-person-vcard-fill me-2"></i>
-    Account Holder Name <span class="required">*</span>
-</label>
-        <input type="text" class="form-control" id="accountHolder" required>
-    </div>
-
-    <div class="col-12 col-md-6 mb-3">
-        <label class="form-label">
-    <i class="bi bi-bank2 me-2"></i>
-    Bank Name <span class="required">*</span>
-</label>
-        <input type="text" class="form-control" id="bankName" required>
-    </div>
-
-    <div class="col-12 col-md-6 mb-3">
-        <label class="form-label">
-    <i class="bi bi-shield-check me-2"></i>
-    IFSC Code <span class="required">*</span>
-</label>
-        <input type="text" class="form-control" id="ifsc" required>
-    </div>
-
-</div>
-
-        <button type="submit" class="btn btn-primary">
-            Register Vendor
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+            <i class="bi bi-person-plus-fill me-2"></i>Register Vendor
         </button>
-
     </form>
-
 </div>
+
+<!-- Download CSV -->
 <div class="text-center mb-3 d-grid gap-2 d-md-block">
     <button class="btn btn-success" onclick="verifyAndDownload()">
-    Download CSV
-</button>
+        <i class="bi bi-download me-2"></i>Download CSV
+    </button>
 </div>
+
+<!-- Success Modal (Registration) -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg text-center p-4">
+            <div class="success-checkmark">
+                <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                    <div class="icon-circle"></div>
+                    <div class="icon-fix"></div>
+                </div>
+            </div>
+            <h3 class="mt-3 text-success fw-bold">Registration Successful!</h3>
+            <p class="text-muted mb-3">Thank you for registering with The Ma Foi Foundation.</p>
+
+            <!-- Token display inside modal -->
+            <div class="token-box text-start">
+                <h6><i class="bi bi-key-fill me-2"></i>Your Edit Token — Save this!</h6>
+                <p class="small text-muted mb-2">You'll need this token + your email to edit your submission later.</p>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="token-value flex-grow-1" id="modalTokenDisplay">—</div>
+                    <i class="bi bi-clipboard copy-btn" title="Copy token" onclick="copyToken()"></i>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary px-4 mt-3" data-bs-dismiss="modal">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Update Success Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg text-center p-4">
+            <div class="success-checkmark">
+                <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                    <div class="icon-circle"></div>
+                    <div class="icon-fix"></div>
+                </div>
+            </div>
+            <h3 class="mt-3 text-success fw-bold">Submission Updated!</h3>
+            <p class="text-muted mb-3">Your vendor details have been successfully updated.</p>
+            <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal" onclick="cancelEdit()">Done</button>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <script>
-const SUPABASE_URL =
-"https://lfgdjpspaawgaltjvdag.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_iaGXvmD722n-wCGh5ovDTw_UcXkirpv";
-
+const SUPABASE_URL = "https://lfgdjpspaawgaltjvdag.supabase.co";
+const SUPABASE_KEY = "sb_publishable_iaGXvmD722n-wCGh5ovDTw_UcXkirpv";
 const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const db = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+// ─── State ───────────────────────────────────────────────
+let isEditMode = false;
+let editRecordId = null;       // numeric PK of the row being edited
+let existingPanUrl = "";
+let existingGstUrl = "";
+let existingAgreementUrl = "";
+let generatedToken = "";
 
-let vendors = [];
-
-// Form submit
-document
-.getElementById("vendorForm")
-.addEventListener("submit", async function(e){
-    e.preventDefault();
-    const btn = document.querySelector("button[type='submit']");
-btn.disabled = true;
-btn.innerText = "Submitting...";
-    const accountNumber =
-document.getElementById("accountNumber").value.trim();
-
-if (!/^\d+$/.test(accountNumber)) {
-    alert("Bank Account Number must contain only numbers.");
-    return;
-}
-    if (!this.checkValidity()) {
-    this.reportValidity();
-    return;
+// ─── Utility: generate UUID token ────────────────────────
+function generateToken() {
+    return crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random()*16|0;
+            return (c==='x' ? r : (r&0x3|0x8)).toString(16);
+        });
 }
 
-const mobile =
-document.getElementById("mobile").value.trim();
-
-const alternateMobile =
-document.getElementById("alternateMobile").value.trim();
-
-if (!/^\d{10}$/.test(mobile)) {
-    alert("Mobile Number must contain exactly 10 digits.");
-    return;
+// ─── Copy token to clipboard ─────────────────────────────
+function copyToken() {
+    const val = document.getElementById("modalTokenDisplay").textContent;
+    navigator.clipboard.writeText(val).then(() => {
+        const icon = document.querySelector(".copy-btn");
+        icon.classList.replace("bi-clipboard", "bi-clipboard-check");
+        setTimeout(() => icon.classList.replace("bi-clipboard-check","bi-clipboard"), 2000);
+    });
 }
 
-if (!/^\d{10}$/.test(alternateMobile)) {
-    alert("Alternate Mobile Number must contain exactly 10 digits.");
-    return;
+// ─── Switch between Register / Edit-Lookup modes ─────────
+function switchMode(mode) {
+    document.getElementById("tab-register").classList.toggle("active", mode === "register");
+    document.getElementById("tab-edit").classList.toggle("active", mode === "edit-lookup");
+    document.getElementById("editLookupPanel").style.display = (mode === "edit-lookup") ? "block" : "none";
+    document.getElementById("formCard").style.display = (mode === "register") ? "block" : "none";
+
+    if (mode === "register" && isEditMode) cancelEdit();
 }
 
-const selectedServices = Array.from(
-    document.querySelectorAll(".service-checkbox:checked")
-).map(cb => cb.value);
+// ─── Cancel edit, return to clean register form ───────────
+function cancelEdit() {
+    isEditMode = false;
+    editRecordId = null;
+    existingPanUrl = existingGstUrl = existingAgreementUrl = "";
 
-if (selectedServices.length === 0) {
-    alert("Please select at least one Service Category.");
-    return;
+    document.getElementById("editModeBanner").style.display = "none";
+    document.getElementById("submitBtn").innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+
+    // Restore file required attributes
+    document.getElementById("panFile").setAttribute("required", "");
+    document.getElementById("agreementFile").setAttribute("required", "");
+
+    // Hide hints
+    ["panFileHint","gstFileHint","agreementFileHint"].forEach(id => {
+        document.getElementById(id).style.display = "none";
+    });
+
+    document.getElementById("vendorForm").reset();
+    updateServiceDropdownLabel();
+    switchMode("register");
 }
 
-const panFile = document.getElementById("panFile").files[0];
-if (!panFile) {
-    alert("PAN file is required");
-    return;
-}
+// ─── Look up vendor by email + token ─────────────────────
+async function lookupVendor() {
+    const email = document.getElementById("lookupEmail").value.trim().toLowerCase();
+    const token = document.getElementById("lookupToken").value.trim();
+    const errBox = document.getElementById("lookupError");
+    errBox.style.display = "none";
 
-let panUrl = "";
-
-if (panFile) {
-
-    const fileName =
-    Date.now() + "_PAN_" + panFile.name;
-
-    const { data, error } =
-    await db.storage
-        .from("vendor-documents")
-        .upload(fileName, panFile);
-
-    console.log("PAN Upload Data:", data);
-    console.log("PAN Upload Error:", error);
-
-    if (!error) {
-        panUrl =
-        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
-    }
-}
-
-const gstFile = document.getElementById("gstFile").files[0];
-
-let gstUrl = "";
-
-if (gstFile) {
-
-    const fileName =
-    Date.now() + "_GST_" + gstFile.name;
-
-    const { data, error } =
-    await db.storage
-        .from("vendor-documents")
-        .upload(fileName, gstFile);
-
-    console.log("GST Upload Data:", data);
-    console.log("GST Upload Error:", error);
-
-    if (!error) {
-        gstUrl =
-        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
-    }
-}
-
-const agreementFile =
-document.getElementById("agreementFile").files[0];
-if (!agreementFile) {
-    alert("Agreement file is required");
-    return;
-}
-
-let agreementUrl = "";
-
-if (agreementFile) {
-
-    const fileName =
-    Date.now() + "_AGREEMENT_" + agreementFile.name;
-
-    const { error } =
-    await db.storage
-        .from("vendor-documents")
-        .upload(fileName, agreementFile);
-
-    if (!error) {
-
-        agreementUrl =
-        `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
-    }
-}
-
-    const vendorData = {
-
-        vendor_name:
-            document.getElementById("vendorName").value,
-
-        contact_person:
-    document.getElementById("contactPerson").value,
-
-company_address:
-    document.getElementById("companyAddress").value,
-
-alternate_mobile:
-    document.getElementById("alternateMobile").value,
-
-        email:
-            document.getElementById("email").value,
-
-        mobile:
-            document.getElementById("mobile").value,
-
-        pan:
-            document.getElementById("pan").value,
-
-        gst:
-            document.getElementById("gst").value,
-
-        service:
-    selectedServices,
-    account_number:
-    document.getElementById("accountNumber").value,
-
-account_holder:
-    document.getElementById("accountHolder").value,
-
-agreement_file: agreementUrl,
-
-agreement_date:
-document.getElementById("agreementDate").value,
-
-agreement_validity:
-document.getElementById("agreementValidity").value,
-
-bank_name:
-    document.getElementById("bankName").value,
-
-ifsc:
-    document.getElementById("ifsc").value,
-            pan_file: panUrl,
-
-gst_file: gstUrl,
-    };
-    console.log("Vendor Data:", vendorData);
-
-    const { data, error } = await db
-    .from("vendors")
-    .insert([vendorData])
-    .select();
-
-console.log("Inserted Data:", data);
-console.log("Insert Error:", error);
-
-    if (error) {
-
-        console.error("Insert Error:", error);
-        alert("Error saving vendor");
-        btn.disabled = false;
-    btn.innerText = "Register Vendor";
-
+    if (!email || !token) {
+        errBox.textContent = "Please enter both email and edit token.";
+        errBox.style.display = "block";
         return;
     }
 
-    const successModal =
-new bootstrap.Modal(
-    document.getElementById("successModal")
-);
-
-successModal.show();
-
-confetti({
-    particleCount: 150,
-    spread: 90,
-    origin: { y: 0.6 }
-});
-
-    this.reset();
-
-    loadVendors();
-    btn.disabled = false;
-btn.innerText = "Register Vendor";
-});
-// CSV Download
-async function verifyAndDownload() {
-
-    const password = prompt(
-        "Enter TMF Admin Password"
-    );
-
-    if (!password) {
-        return;
-    }
-
-    if (password !== "TMF@2026") {
-        alert("Incorrect Password");
-        return;
-    }
-
-    downloadCSV();
-}
-async function downloadCSV() {
+    const btn = document.querySelector("#editLookupPanel .btn-primary");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
 
     const { data, error } = await db
         .from("vendors")
         .select("*")
-        .order("id", { ascending: false });
+        .ilike("email", email)
+        .eq("edit_token", token)
+        .maybeSingle();
 
-    if (error) {
-        console.error(error);
-        alert("Failed to fetch data");
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-search me-2"></i>Find My Submission';
+
+    if (error || !data) {
+        errBox.textContent = "No matching record found. Please check your email and token.";
+        errBox.style.display = "block";
         return;
     }
 
-    const vendors = data || [];
+    // Found — load into form
+    loadVendorIntoForm(data);
+}
 
-    let csv =
-"ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
+// ─── Populate form with existing data ────────────────────
+function loadVendorIntoForm(v) {
+    isEditMode = true;
+    editRecordId = v.id;
+    existingPanUrl = v.pan_file || "";
+    existingGstUrl = v.gst_file || "";
+    existingAgreementUrl = v.agreement_file || "";
 
-    vendors.forEach(v => {
+    document.getElementById("vendorName").value     = v.vendor_name || "";
+    document.getElementById("contactPerson").value  = v.contact_person || "";
+    document.getElementById("companyAddress").value = v.company_address || "";
+    document.getElementById("email").value          = v.email || "";
+    document.getElementById("mobile").value         = v.mobile || "";
+    document.getElementById("alternateMobile").value= v.alternate_mobile || "";
+    document.getElementById("pan").value            = v.pan || "";
+    document.getElementById("gst").value            = v.gst || "";
+    document.getElementById("agreementDate").value  = v.agreement_date || "";
+    document.getElementById("agreementValidity").value = v.agreement_validity || "";
+    document.getElementById("accountNumber").value  = v.account_number || "";
+    document.getElementById("accountHolder").value  = v.account_holder || "";
+    document.getElementById("bankName").value       = v.bank_name || "";
+    document.getElementById("ifsc").value           = v.ifsc || "";
 
+    // Services
+    const services = Array.isArray(v.service) ? v.service : [];
+    document.querySelectorAll(".service-checkbox").forEach(cb => {
+        cb.checked = services.includes(cb.value);
+    });
+    updateServiceDropdownLabel();
+
+    // File hints — files are optional in edit mode
+    document.getElementById("panFile").removeAttribute("required");
+    document.getElementById("agreementFile").removeAttribute("required");
+
+    if (existingPanUrl)       document.getElementById("panFileHint").style.display = "block";
+    if (existingGstUrl)       document.getElementById("gstFileHint").style.display = "block";
+    if (existingAgreementUrl) document.getElementById("agreementFileHint").style.display = "block";
+
+    // Show edit banner & update button
+    document.getElementById("editModeBanner").style.display = "block";
+    document.getElementById("submitBtn").innerHTML = '<i class="bi bi-save-fill me-2"></i>Update Submission';
+
+    // Show form, hide lookup panel
+    document.getElementById("editLookupPanel").style.display = "none";
+    document.getElementById("formCard").style.display = "block";
+    document.getElementById("tab-register").classList.add("active");
+    document.getElementById("tab-edit").classList.remove("active");
+
+    // Scroll to top of form
+    document.getElementById("formCard").scrollIntoView({ behavior: "smooth" });
+}
+
+// ─── Update dropdown button label ────────────────────────
+function updateServiceDropdownLabel() {
+    const checked = Array.from(document.querySelectorAll(".service-checkbox:checked")).map(c => c.value);
+    const btn = document.querySelector(".dropdown-toggle");
+    btn.textContent = checked.length > 0 ? checked.join(", ") : "Select Service Categories";
+}
+
+document.querySelectorAll(".service-checkbox").forEach(cb => {
+    cb.addEventListener("change", updateServiceDropdownLabel);
+});
+
+// ─── Upload helper ────────────────────────────────────────
+async function uploadFile(file, prefix) {
+    const fileName = Date.now() + "_" + prefix + "_" + file.name;
+    const { error } = await db.storage.from("vendor-documents").upload(fileName, file);
+    if (error) { console.error("Upload error:", error); return ""; }
+    return `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
+}
+
+// ─── Form Submit (Register OR Update) ────────────────────
+document.getElementById("vendorForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' +
+                    (isEditMode ? "Updating..." : "Submitting...");
+
+    // Validate mobile
+    const mobile = document.getElementById("mobile").value.trim();
+    const alternateMobile = document.getElementById("alternateMobile").value.trim();
+    if (!/^\d{10}$/.test(mobile)) {
+        alert("Mobile Number must contain exactly 10 digits.");
+        btn.disabled = false;
+        btn.innerHTML = isEditMode
+            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
+            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        return;
+    }
+    if (!/^\d{10}$/.test(alternateMobile)) {
+        alert("Alternate Mobile Number must contain exactly 10 digits.");
+        btn.disabled = false;
+        btn.innerHTML = isEditMode
+            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
+            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        return;
+    }
+
+    // Validate services
+    const selectedServices = Array.from(
+        document.querySelectorAll(".service-checkbox:checked")
+    ).map(cb => cb.value);
+    if (selectedServices.length === 0) {
+        alert("Please select at least one Service Category.");
+        btn.disabled = false;
+        btn.innerHTML = isEditMode
+            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
+            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        return;
+    }
+
+    // Validate files for NEW registration
+    if (!isEditMode) {
+        if (!document.getElementById("panFile").files[0]) {
+            alert("PAN file is required");
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+            return;
+        }
+        if (!document.getElementById("agreementFile").files[0]) {
+            alert("Agreement file is required");
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+            return;
+        }
+    }
+
+    // Upload files (new uploads replace old; if no new file, keep existing URL)
+    const panFileInput = document.getElementById("panFile").files[0];
+    const gstFileInput = document.getElementById("gstFile").files[0];
+    const agreementFileInput = document.getElementById("agreementFile").files[0];
+
+    let panUrl       = existingPanUrl;
+    let gstUrl       = existingGstUrl;
+    let agreementUrl = existingAgreementUrl;
+
+    if (panFileInput)       panUrl       = await uploadFile(panFileInput, "PAN");
+    if (gstFileInput)       gstUrl       = await uploadFile(gstFileInput, "GST");
+    if (agreementFileInput) agreementUrl = await uploadFile(agreementFileInput, "AGREEMENT");
+
+    const vendorData = {
+        vendor_name:        document.getElementById("vendorName").value,
+        contact_person:     document.getElementById("contactPerson").value,
+        company_address:    document.getElementById("companyAddress").value,
+        email:              document.getElementById("email").value,
+        mobile:             mobile,
+        alternate_mobile:   alternateMobile,
+        pan:                document.getElementById("pan").value,
+        gst:                document.getElementById("gst").value,
+        service:            selectedServices,
+        account_number:     document.getElementById("accountNumber").value,
+        account_holder:     document.getElementById("accountHolder").value,
+        bank_name:          document.getElementById("bankName").value,
+        ifsc:               document.getElementById("ifsc").value,
+        agreement_date:     document.getElementById("agreementDate").value,
+        agreement_validity: document.getElementById("agreementValidity").value,
+        pan_file:           panUrl,
+        gst_file:           gstUrl,
+        agreement_file:     agreementUrl,
+    };
+
+    if (isEditMode) {
+        // ── UPDATE existing row ──
+        const { error } = await db
+            .from("vendors")
+            .update(vendorData)
+            .eq("id", editRecordId);
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Update Submission';
+
+        if (error) {
+            console.error("Update Error:", error);
+            alert("Error updating vendor: " + error.message);
+            return;
+        }
+
+        const updateModal = new bootstrap.Modal(document.getElementById("updateModal"));
+        updateModal.show();
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+    } else {
+        // ── INSERT new row (with token) ──
+        generatedToken = generateToken();
+        vendorData.edit_token = generatedToken;
+
+        const { data, error } = await db
+            .from("vendors")
+            .insert([vendorData])
+            .select();
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+
+        if (error) {
+            console.error("Insert Error:", error);
+            alert("Error saving vendor: " + error.message);
+            return;
+        }
+
+        document.getElementById("modalTokenDisplay").textContent = generatedToken;
+        const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+        successModal.show();
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+        this.reset();
+        updateServiceDropdownLabel();
+    }
+});
+
+// ─── CSV Download ─────────────────────────────────────────
+async function verifyAndDownload() {
+    const password = prompt("Enter TMF Admin Password");
+    if (!password) return;
+    if (password !== "TMF@2026") { alert("Incorrect Password"); return; }
+    downloadCSV();
+}
+
+async function downloadCSV() {
+    const { data, error } = await db.from("vendors").select("*").order("id", { ascending: false });
+    if (error) { console.error(error); alert("Failed to fetch data"); return; }
+
+    let csv = "ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
+
+    (data || []).forEach(v => {
         const row = [
-    v.id,
-    v.vendor_name,
-    v.contact_person,
-    v.company_address,
-    v.email,
-    v.mobile,
-    v.alternate_mobile,
-    `="${v.pan ?? ""}"`,
-    v.gst,
-    Array.isArray(v.service) ? v.service.join("; ") : v.service,
-    v.account_number,
-    v.account_holder,
-    v.bank_name,
-    v.ifsc,
-    v.agreement_date,
-    v.agreement_validity,
-    v.pan_file,
-    v.gst_file,
-    v.agreement_file
-]
-        .map(v => (v ?? "").toString().replace(/"/g, '""')) // escape quotes
-        .map(v => `"${v}"`)
-        .join(",");
-
+            v.id, v.vendor_name, v.contact_person, v.company_address, v.email, v.mobile,
+            v.alternate_mobile, `="${v.pan ?? ""}"`, v.gst,
+            Array.isArray(v.service) ? v.service.join("; ") : v.service,
+            v.account_number, v.account_holder, v.bank_name, v.ifsc,
+            v.agreement_date, v.agreement_validity, v.pan_file, v.gst_file, v.agreement_file
+        ].map(v => (v ?? "").toString().replace(/"/g, '""')).map(v => `"${v}"`).join(",");
         csv += row + "\n";
     });
 
     const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
-    a.href = url;
+    a.href = URL.createObjectURL(blob);
     a.download = "vendors.csv";
     a.click();
 }
-
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </div>
 
-
-    <div class="modal fade" id="successModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg text-center p-4">
-
-      <div class="success-checkmark">
-        <div class="check-icon">
-          <span class="icon-line line-tip"></span>
-          <span class="icon-line line-long"></span>
-          <div class="icon-circle"></div>
-          <div class="icon-fix"></div>
-        </div>
-      </div>
-
-      <h3 class="mt-3 text-success fw-bold">
-        Registration Successful
-      </h3>
-
-      <p class="text-muted mb-3">
-        Thank you for registering with The Ma Foi Foundation.
-        Your vendor registration has been submitted successfully.
-      </p>
-
-      <button
-        type="button"
-        class="btn btn-primary px-4"
-        data-bs-dismiss="modal">
-        Done
-      </button>
-
-    </div>
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </body>
 </html>
