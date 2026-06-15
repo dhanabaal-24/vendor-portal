@@ -306,6 +306,10 @@ body { background:#f4f6f9; }
                 <label class="form-label"><i class="bi bi-shield-check me-2"></i>IFSC Code <span class="required">*</span></label>
                 <input type="text" class="form-control" id="ifsc" required>
             </div>
+            <div class="col-12 col-md-6 mb-3">
+    <label class="form-label"><i class="bi bi-signpost-fill me-2"></i>Branch Name <span class="required">*</span></label>
+    <input type="text" class="form-control" id="branchName" placeholder="e.g. Anna Nagar Branch" required>
+</div>
         </div>
 
         <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -504,6 +508,7 @@ function loadVendorIntoForm(v) {
     document.getElementById("accountHolder").value  = v.account_holder || "";
     document.getElementById("bankName").value       = v.bank_name || "";
     document.getElementById("ifsc").value           = v.ifsc || "";
+    document.getElementById("branchName").value = v.branch_name || "";
 
     // Services
     const services = Array.isArray(v.service) ? v.service : [];
@@ -638,6 +643,7 @@ document.getElementById("vendorForm").addEventListener("submit", async function(
         account_holder:     document.getElementById("accountHolder").value,
         bank_name:          document.getElementById("bankName").value,
         ifsc:               document.getElementById("ifsc").value,
+        branch_name: document.getElementById("branchName").value,
         agreement_date:     document.getElementById("agreementDate").value,
         agreement_validity: document.getElementById("agreementValidity").value,
         pan_file:           panUrl,
@@ -757,14 +763,14 @@ async function downloadCSV() {
     const { data, error } = await db.from("vendors").select("*").order("id", { ascending: false });
     if (error) { console.error(error); alert("Failed to fetch data"); return; }
 
-    let csv = "ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
+    let csv = "ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Branch Name,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
 
     (data || []).forEach(v => {
         const row = [
             v.id, v.vendor_name, v.contact_person, v.company_address, v.email, v.mobile,
             v.alternate_mobile, `="${v.pan ?? ""}"`, v.gst,
             Array.isArray(v.service) ? v.service.join("; ") : v.service,
-            v.account_number, v.account_holder, v.bank_name, v.ifsc,
+            v.account_number, v.account_holder, v.bank_name, v.ifsc,v.branch_name,
             v.agreement_date, v.agreement_validity, v.pan_file, v.gst_file, v.agreement_file
         ].map(v => (v ?? "").toString().replace(/"/g, '""')).map(v => `"${v}"`).join(",");
         csv += row + "\n";
