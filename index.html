@@ -318,10 +318,10 @@ body { background:#f4f6f9; }
     </form>
 </div>
 
-<!-- Download CSV -->
+<!-- Download Excel -->
 <div class="text-center mb-3 d-grid gap-2 d-md-block">
     <button class="btn btn-success" onclick="verifyAndDownload()">
-        <i class="bi bi-download me-2"></i>Download CSV
+        <i class="bi bi-file-earmark-arrow-down me-2"></i>Download Vendor Data
     </button>
 </div>
 
@@ -381,6 +381,7 @@ body { background:#f4f6f9; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
 const SUPABASE_URL = "https://lfgdjpspaawgaltjvdag.supabase.co";
@@ -699,7 +700,7 @@ document.getElementById("vendorForm").addEventListener("submit", async function(
     }
 });
 
-// ─── CSV Download ─────────────────────────────────────────
+// ─── Excel Download ─────────────────────────────────────────
 function verifyAndDownload() {
     resetPwdModal();
     const modal = new bootstrap.Modal(document.getElementById("passwordModal"));
@@ -756,36 +757,79 @@ async function submitPassword() {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Downloading...';
     bootstrap.Modal.getInstance(document.getElementById("passwordModal")).hide();
     resetPwdModal();
-    await downloadCSV();
+    await downloadExcel();
 }
 
-async function downloadCSV() {
+// Columns that must always be stored as TEXT in the workbook so Excel
+// never reformats them as numbers (which silently strips leading zeros,
+// e.g. account numbers, or applies scientific notation to long digit strings).
+const TEXT_COLUMNS = ["Mobile", "Alternate Mobile", "PAN", "GST", "Account Number", "IFSC"];
+
+async function downloadExcel() {
     const { data, error } = await db.from("vendors").select("*").order("id", { ascending: false });
     if (error) { console.error(error); alert("Failed to fetch data"); return; }
 
-    let csv = "ID,Vendor Name,Contact Person,Company Address,Email,Mobile,Alternate Mobile,PAN,GST,Service,Account Number,Account Holder,Bank Name,IFSC,Branch Name,Agreement Date,Agreement Validity,PAN File,GST File,Agreement File\n";
+    const headers = [
+        "ID","Vendor Name","Contact Person","Company Address","Email","Mobile",
+        "Alternate Mobile","PAN","GST","Service","Account Number","Account Holder",
+        "Bank Name","IFSC","Branch Name","Agreement Date","Agreement Validity",
+        "PAN File","GST File","Agreement File"
+    ];
 
-    (data || []).forEach(v => {
-        const row = [
-            v.id, v.vendor_name, v.contact_person, v.company_address, v.email, v.mobile,
-            v.alternate_mobile, `="${v.pan ?? ""}"`, v.gst,
-            Array.isArray(v.service) ? v.service.join("; ") : v.service,
-            v.account_number, v.account_holder, v.bank_name, v.ifsc,v.branch_name,
-            v.agreement_date, v.agreement_validity, v.pan_file, v.gst_file, v.agreement_file
-        ].map(v => (v ?? "").toString().replace(/"/g, '""')).map(v => `"${v}"`).join(",");
-        csv += row + "\n";
-    });
+    const rows = (data || []).map(v => ([
+        v.id,
+        v.vendor_name,
+        v.contact_person,
+        v.company_address,
+        v.email,
+        v.mobile,
+        v.alternate_mobile,
+        v.pan,
+        v.gst,
+        Array.isArray(v.service) ? v.service.join("; ") : v.service,
+        v.account_number,
+        v.account_holder,
+        v.bank_name,
+        v.ifsc,
+        v.branch_name,
+        v.agreement_date,
+        v.agreement_validity,
+        v.pan_file,
+        v.gst_file,
+        v.agreement_file
+    ]));
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "vendors.csv";
-    a.click();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+    // Force the ID-like columns to be real TEXT cells (type 's', format '@')
+    // so values like "0138053000012118" survive exactly as stored, with
+    // no leading-zero stripping and no scientific-notation conversion.
+    const textColIndexes = TEXT_COLUMNS.map(name => headers.indexOf(name));
+    const range = XLSX.utils.decode_range(ws['!ref']);
+
+    for (let r = 1; r <= range.e.r; r++) {
+        textColIndexes.forEach(c => {
+            const ref = XLSX.utils.encode_cell({ r, c });
+            const cell = ws[ref];
+            if (cell) {
+                cell.v = (cell.v === null || cell.v === undefined) ? "" : String(cell.v);
+                cell.t = 's';
+                cell.z = '@';
+            }
+        });
+    }
+
+    // Reasonable column widths so the sheet is readable on open
+    ws['!cols'] = headers.map(h => ({ wch: Math.max(14, h.length + 4) }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Vendors");
+    XLSX.writeFile(wb, "vendors.xlsx");
 }
 </script>
 
 
-<!-- Password Modal for CSV Download -->
+<!-- Password Modal for Excel Download -->
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
         <div class="modal-content border-0 shadow-lg p-4" style="border-radius:20px;">
