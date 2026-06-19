@@ -148,21 +148,26 @@ body { background:#f4f6f9; }
                 <i class="bi bi-pencil-square me-2"></i>Edit My Submission
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-invoice" href="#" onclick="switchMode('invoice'); return false;">
+                <i class="bi bi-receipt me-2"></i>Generate Invoice
+            </a>
+        </li>
     </ul>
 </div>
 
 <!-- Edit Lookup Panel -->
 <div id="editLookupPanel" class="card shadow p-4 mb-4" style="display:none;">
     <h4><i class="bi bi-search me-2"></i>Find Your Submission</h4>
-    <p class="text-muted small">Enter the email and edit token you received when you registered.</p>
+    <p class="text-muted small">Enter the email and edit or invoice token you received when you registered.</p>
     <div class="row">
         <div class="col-12 col-md-6 mb-3">
             <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Registered Email <span class="required">*</span></label>
             <input type="email" class="form-control" id="lookupEmail" placeholder="your@email.com">
         </div>
         <div class="col-12 col-md-6 mb-3">
-            <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit Token <span class="required">*</span></label>
-            <input type="text" class="form-control" id="lookupToken" placeholder="Paste your edit token here" style="font-family:monospace;">
+            <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit / Invoice Token <span class="required">*</span></label>
+            <input type="text" class="form-control" id="lookupToken" placeholder="Paste your edit / invoice token here" style="font-family:monospace;">
         </div>
     </div>
     <div class="text-center">
@@ -172,6 +177,202 @@ body { background:#f4f6f9; }
     </div>
     <div id="lookupError" class="alert alert-danger mt-3" style="display:none;"></div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════
+     GENERATE INVOICE PANEL
+════════════════════════════════════════════════════════ -->
+<div id="invoicePanel" style="display:none;">
+
+    <!-- Step 1 – Verify Vendor -->
+    <div class="card shadow p-4 mb-4" id="invoiceVerifyCard">
+        <h4><i class="bi bi-shield-lock-fill me-2"></i>Generate Vendor Invoice</h4>
+        <p class="text-muted small text-center mb-4">Enter your registered email and edit / invoice token to fetch your vendor details automatically.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-5 mb-3">
+                <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Registered Email <span class="required">*</span></label>
+                <input type="email" class="form-control" id="invEmail" placeholder="your@email.com">
+            </div>
+            <div class="col-12 col-md-5 mb-3">
+                <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit / Invoice Token <span class="required">*</span></label>
+                <input type="text" class="form-control" id="invToken" placeholder="Paste your edit / invoice token" style="font-family:monospace;">
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" id="fetchVendorBtn" onclick="fetchVendorForInvoice()">
+                <i class="bi bi-search me-2"></i>Fetch Vendor Details
+            </button>
+        </div>
+        <div id="invVerifyError" class="alert alert-danger mt-3" style="display:none;"></div>
+    </div>
+
+    <!-- Step 2 – Invoice Form (hidden until vendor fetched) -->
+    <div id="invoiceFormSection" style="display:none;">
+
+        <!-- Vendor Details (read-only) -->
+        <div class="card shadow p-4 mb-4">
+            <h4><i class="bi bi-building-fill me-2"></i>Vendor Details</h4>
+            <div class="inv-vendor-banner mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="inv-vendor-avatar" id="invVendorAvatar">V</div>
+                    <div>
+                        <div class="fw-bold" id="invVendorNameBig" style="font-size:17px;color:var(--navy);">—</div>
+                        <div class="text-muted small" id="invVendorEmailBig">—</div>
+                    </div>
+                    <div class="ms-auto">
+                        <span class="badge inv-badge-verified"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-person-fill me-1"></i>Contact Person</div>
+                        <div class="inv-info-value" id="roContactPerson">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-telephone-fill me-1"></i>Mobile</div>
+                        <div class="inv-info-value" id="roMobile">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-credit-card-2-front-fill me-1"></i>PAN Number</div>
+                        <div class="inv-info-value" id="roPan">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-receipt-cutoff me-1"></i>GST Number</div>
+                        <div class="inv-info-value" id="roGst">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-briefcase-fill me-1"></i>Service Categories</div>
+                        <div class="inv-info-value" id="roService">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="inv-info-block">
+                        <div class="inv-info-label"><i class="bi bi-geo-alt-fill me-1"></i>Address</div>
+                        <div class="inv-info-value" id="roAddress" style="font-size:12px;">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h5><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="inv-info-block inv-info-block--bank">
+                        <div class="inv-info-label"><i class="bi bi-person-vcard-fill me-1"></i>Account Holder</div>
+                        <div class="inv-info-value" id="roAccountHolder">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="inv-info-block inv-info-block--bank">
+                        <div class="inv-info-label"><i class="bi bi-bank me-1"></i>Bank Name</div>
+                        <div class="inv-info-value" id="roBankName">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="inv-info-block inv-info-block--bank">
+                        <div class="inv-info-label"><i class="bi bi-123 me-1"></i>Account Number</div>
+                        <div class="inv-info-value" id="roAccountNumber" style="font-family:monospace;letter-spacing:1px;">—</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="inv-info-block inv-info-block--bank">
+                        <div class="inv-info-label"><i class="bi bi-shield-check me-1"></i>IFSC / Branch</div>
+                        <div class="inv-info-value" id="roIfsc">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="card shadow p-4 mb-4">
+            <h4><i class="bi bi-file-earmark-text-fill me-2"></i>Invoice Details</h4>
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label class="form-label"><i class="bi bi-hash me-2"></i>Invoice Number <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="invNumber" placeholder="e.g. TMF-2026-001" required>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label class="form-label"><i class="bi bi-calendar-event-fill me-2"></i>Invoice Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invDate" required>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label class="form-label"><i class="bi bi-calendar-range-fill me-2"></i>Billing Period — From <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invFromDate" required>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label class="form-label"><i class="bi bi-calendar-check-fill me-2"></i>Billing Period — To <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invToDate" required>
+                </div>
+                <div class="col-12 col-lg-8">
+                    <label class="form-label"><i class="bi bi-card-text me-2"></i>Service Description <span class="required">*</span></label>
+                    <textarea class="form-control" id="invDescription" rows="2" placeholder="e.g. Training services for Skill Development programme, Batch #12" required></textarea>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h5><i class="bi bi-calculator-fill me-2"></i>Pricing & Tax</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <label class="form-label"><i class="bi bi-boxes me-2"></i>Quantity <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invQty" placeholder="0" min="1" required>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label"><i class="bi bi-currency-rupee me-2"></i>Rate (₹) <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invRate" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label"><i class="bi bi-percent me-2"></i>CGST % <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invCgst" placeholder="9" min="0" max="50" step="0.01" value="9" required>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label"><i class="bi bi-percent me-2"></i>SGST % <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invSgst" placeholder="9" min="0" max="50" step="0.01" value="9" required>
+                </div>
+            </div>
+
+            <!-- Live Totals -->
+            <div class="inv-totals-card mt-4">
+                <div class="inv-totals-title"><i class="bi bi-calculator me-2"></i>Live Summary</div>
+                <div class="inv-totals-grid">
+                    <div class="inv-total-row">
+                        <span class="inv-total-label">Subtotal (Qty × Rate)</span>
+                        <span class="inv-total-value" id="calcAmount">₹ 0.00</span>
+                    </div>
+                    <div class="inv-total-row">
+                        <span class="inv-total-label">CGST Amount</span>
+                        <span class="inv-total-value" id="calcCgst">₹ 0.00</span>
+                    </div>
+                    <div class="inv-total-row">
+                        <span class="inv-total-label">SGST Amount</span>
+                        <span class="inv-total-value" id="calcSgst">₹ 0.00</span>
+                    </div>
+                    <div class="inv-total-row inv-total-row--grand">
+                        <span class="inv-total-label">Grand Total</span>
+                        <span class="inv-total-value" id="calcGrand">₹ 0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center mb-5">
+            <button class="btn btn-primary btn-inv-generate" id="generatePdfBtn" onclick="generateInvoicePDF()">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF
+            </button>
+        </div>
+
+    </div><!-- /invoiceFormSection -->
+</div><!-- /invoicePanel -->
 
 <!-- Registration / Edit Form -->
 <div class="card shadow p-4 mb-4" id="formCard">
@@ -342,7 +543,7 @@ body { background:#f4f6f9; }
 
             <!-- Token display inside modal -->
             <div class="token-box text-start">
-                <h6><i class="bi bi-key-fill me-2"></i>Your Edit Token — Save this!</h6>
+                <h6><i class="bi bi-key-fill me-2"></i>Your Edit / Invoice Token — Save this!</h6>
                 <p class="small text-muted mb-2">You'll need this token + your email to edit your submission later.</p>
                 <div class="d-flex align-items-center gap-2">
                     <div class="token-value flex-grow-1" id="modalTokenDisplay">—</div>
@@ -377,11 +578,33 @@ body { background:#f4f6f9; }
 </div>
 </div>
 
+<!-- Invoice Success Modal -->
+<div class="modal fade" id="invoiceSuccessModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg text-center p-4">
+            <div class="success-checkmark">
+                <div class="check-icon">
+                    <span class="icon-line line-tip"></span>
+                    <span class="icon-line line-long"></span>
+                    <div class="icon-circle"></div>
+                    <div class="icon-fix"></div>
+                </div>
+            </div>
+            <h3 class="mt-3 fw-bold" style="color:var(--navy);">Invoice Generated!</h3>
+            <p class="text-muted mb-1">Your invoice has been saved and the PDF is downloading.</p>
+            <p class="small text-muted mb-3" id="invSuccessFilename" style="font-family:monospace;font-size:12px;"></p>
+            <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Done</button>
+        </div>
+    </div>
+</div>
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
 <script>
 const SUPABASE_URL = "https://lfgdjpspaawgaltjvdag.supabase.co";
@@ -417,12 +640,15 @@ function copyToken() {
     });
 }
 
-// ─── Switch between Register / Edit-Lookup modes ─────────
+// ─── Switch between Register / Edit-Lookup / Invoice modes ──
 function switchMode(mode) {
     document.getElementById("tab-register").classList.toggle("active", mode === "register");
     document.getElementById("tab-edit").classList.toggle("active", mode === "edit-lookup");
-    document.getElementById("editLookupPanel").style.display = (mode === "edit-lookup") ? "block" : "none";
-    document.getElementById("formCard").style.display = (mode === "register") ? "block" : "none";
+    document.getElementById("tab-invoice").classList.toggle("active", mode === "invoice");
+
+    document.getElementById("editLookupPanel").style.display  = (mode === "edit-lookup") ? "block" : "none";
+    document.getElementById("formCard").style.display         = (mode === "register")    ? "block" : "none";
+    document.getElementById("invoicePanel").style.display     = (mode === "invoice")     ? "block" : "none";
 
     if (mode === "register" && isEditMode) cancelEdit();
 }
@@ -458,7 +684,7 @@ async function lookupVendor() {
     errBox.style.display = "none";
 
     if (!email || !token) {
-        errBox.textContent = "Please enter both email and edit token.";
+        errBox.textContent = "Please enter both email and edit / invoice token.";
         errBox.style.display = "block";
         return;
     }
@@ -700,7 +926,471 @@ document.getElementById("vendorForm").addEventListener("submit", async function(
     }
 });
 
-// ─── Excel Download ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// INVOICE MODULE
+// ═══════════════════════════════════════════════════════════
+
+let invVendorData = null;
+
+async function fetchVendorForInvoice() {
+    const email  = document.getElementById("invEmail").value.trim().toLowerCase();
+    const token  = document.getElementById("invToken").value.trim();
+    const errBox = document.getElementById("invVerifyError");
+    errBox.style.display = "none";
+
+    if (!email || !token) {
+        errBox.textContent = "Please enter both your registered email and edit / invoice token.";
+        errBox.style.display = "block";
+        return;
+    }
+
+    const btn = document.getElementById("fetchVendorBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Fetching...';
+
+    const { data, error } = await db
+        .from("vendors")
+        .select("*")
+        .ilike("email", email)
+        .eq("edit_token", token)
+        .maybeSingle();
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-search me-2"></i>Fetch Vendor Details';
+
+    if (error || !data) {
+        errBox.textContent = "Vendor not found. Please verify the Email and Edit / Invoice Token.";
+        errBox.style.display = "block";
+        return;
+    }
+
+    invVendorData = data;
+    populateInvoiceVendorFields(data);
+    document.getElementById("invoiceFormSection").style.display = "block";
+    document.getElementById("invDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("invoiceFormSection").scrollIntoView({ behavior: "smooth" });
+}
+
+function populateInvoiceVendorFields(v) {
+    const name = v.vendor_name || "—";
+    document.getElementById("invVendorNameBig").textContent  = name;
+    document.getElementById("invVendorEmailBig").textContent = v.email || "—";
+    document.getElementById("invVendorAvatar").textContent   = name.charAt(0).toUpperCase();
+    document.getElementById("roContactPerson").textContent   = v.contact_person || "—";
+    document.getElementById("roMobile").textContent          = v.mobile || "—";
+    document.getElementById("roPan").textContent             = v.pan || "—";
+    document.getElementById("roGst").textContent             = v.gst || "N/A";
+    document.getElementById("roService").textContent         = Array.isArray(v.service) ? v.service.join(", ") : (v.service || "—");
+    document.getElementById("roAddress").textContent         = v.company_address || "—";
+    document.getElementById("roAccountHolder").textContent   = v.account_holder || "—";
+    document.getElementById("roBankName").textContent        = v.bank_name || "—";
+    document.getElementById("roAccountNumber").textContent   = v.account_number || "—";
+    document.getElementById("roIfsc").textContent            = (v.ifsc || "—") + (v.branch_name ? " · " + v.branch_name : "");
+}
+
+function recalcInvoice() {
+    const qty     = parseFloat(document.getElementById("invQty").value)  || 0;
+    const rate    = parseFloat(document.getElementById("invRate").value) || 0;
+    const cgstPct = parseFloat(document.getElementById("invCgst").value) || 0;
+    const sgstPct = parseFloat(document.getElementById("invSgst").value) || 0;
+    const amount    = qty * rate;
+    const cgstAmt   = amount * cgstPct / 100;
+    const sgstAmt   = amount * sgstPct / 100;
+    const grandTotal = amount + cgstAmt + sgstAmt;
+    const fmt = v => "\u20B9 " + v.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById("calcAmount").textContent = fmt(amount);
+    document.getElementById("calcCgst").textContent   = fmt(cgstAmt);
+    document.getElementById("calcSgst").textContent   = fmt(sgstAmt);
+    document.getElementById("calcGrand").textContent  = fmt(grandTotal);
+}
+
+["invQty","invRate","invCgst","invSgst"].forEach(id => {
+    window.addEventListener("load", () => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", recalcInvoice);
+    });
+});
+
+function fmtINR(v) {
+    return "\u20B9 " + parseFloat(v).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(d) {
+    if (!d) return "—";
+    const dt = new Date(d + "T00:00:00");
+    return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function amountInWords(amount) {
+    const ones = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+    const tens = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+    function words(n) {
+        if (n === 0) return "";
+        if (n < 20)  return ones[n];
+        if (n < 100) return tens[Math.floor(n/10)] + (n%10 ? " " + ones[n%10] : "");
+        if (n < 1000)     return ones[Math.floor(n/100)] + " Hundred" + (n%100 ? " " + words(n%100) : "");
+        if (n < 100000)   return words(Math.floor(n/1000)) + " Thousand" + (n%1000 ? " " + words(n%1000) : "");
+        if (n < 10000000) return words(Math.floor(n/100000)) + " Lakh" + (n%100000 ? " " + words(n%100000) : "");
+        return words(Math.floor(n/10000000)) + " Crore" + (n%10000000 ? " " + words(n%10000000) : "");
+    }
+    const rupees = Math.floor(amount);
+    const paise  = Math.round((amount - rupees) * 100);
+    return words(rupees) + " Rupees" + (paise > 0 ? " and " + words(paise) + " Paise" : "") + " Only";
+}
+
+// ═══════════════════════════════════════════════════════════
+// REPLACEMENT for generateInvoicePDF() — paste this over the
+// existing function in your <script> block.
+// Simple, single-page layout (reference: Sliced Invoices style)
+// with a diagonal "THE MA FOI FOUNDATION" watermark.
+// ═══════════════════════════════════════════════════════════
+async function generateInvoicePDF() {
+    if (!invVendorData) { alert("Please fetch vendor details first."); return; }
+
+    const invNumber = document.getElementById("invNumber").value.trim();
+    const invDate   = document.getElementById("invDate").value;
+    const fromDate  = document.getElementById("invFromDate").value;
+    const toDate    = document.getElementById("invToDate").value;
+    const desc      = document.getElementById("invDescription").value.trim();
+    const qty       = parseFloat(document.getElementById("invQty").value)  || 0;
+    const rate      = parseFloat(document.getElementById("invRate").value) || 0;
+    const cgstPct   = parseFloat(document.getElementById("invCgst").value) || 0;
+    const sgstPct   = parseFloat(document.getElementById("invSgst").value) || 0;
+
+    if (!invNumber) { alert("Please enter an Invoice Number."); return; }
+    if (!invDate)   { alert("Please select an Invoice Date."); return; }
+    if (!fromDate || !toDate) { alert("Please select the billing period dates."); return; }
+    if (!desc)      { alert("Please enter the Service Description."); return; }
+    if (qty <= 0)   { alert("Quantity must be greater than 0."); return; }
+    if (rate <= 0)  { alert("Rate must be greater than 0."); return; }
+
+    const amount     = qty * rate;
+    const cgstAmt    = amount * cgstPct / 100;
+    const sgstAmt    = amount * sgstPct / 100;
+    const grandTotal = amount + cgstAmt + sgstAmt;
+
+    const btn = document.getElementById("generatePdfBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating PDF...';
+
+    // ── Duplicate invoice number check ─────────────────────
+    const { data: dupCheck } = await db.from("invoices").select("id").eq("invoice_number", invNumber).maybeSingle();
+    if (dupCheck) {
+        alert('Invoice Number "' + invNumber + '" already exists. Please use a unique invoice number.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF';
+        return;
+    }
+
+    // ══════════════════════════════════════════════════════
+    // PDF SETUP
+    // ══════════════════════════════════════════════════════
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    // San Francisco can't be embedded in PDFs (Apple licensing). Helvetica
+    // is jsPDF's built-in metric-equivalent and is used throughout.
+    const FONT = "helvetica";
+
+    const PW = 210, PH = 297;
+    const ML = 18, MR = 18;
+    const CW = PW - ML - MR;   // 174mm usable width
+
+    const NAVY   = [11, 31, 58];
+    const GOLD   = [200, 151, 58];
+    const DKGRAY = [55, 65, 81];
+    const MGRAY  = [120, 130, 145];
+    const LGRAY  = [245, 247, 250];
+    const HGRAY  = [235, 238, 243];
+    const BORDER = [220, 226, 235];
+
+    function fmtR(v) {
+        return "Rs. " + parseFloat(v).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fmtDate(d) {
+        if (!d) return "—";
+        const dt = new Date(d + "T00:00:00");
+        return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 1. TITLE ROW — org name (left) + "INVOICE" (right)
+    // ══════════════════════════════════════════════════════
+    let y = 20;
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(15);
+    doc.setTextColor(...NAVY);
+    doc.text("THE MA FOI FOUNDATION", ML, y);
+
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...MGRAY);
+    doc.text("Empowering Livelihoods", ML, y + 5.5);
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(24);
+    doc.setTextColor(...NAVY);
+    doc.text("INVOICE", PW - MR, y + 2, { align: "right" });
+
+    y += 14;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.8);
+    doc.line(ML, y, PW - MR, y);
+
+    y += 10;
+
+    // ══════════════════════════════════════════════════════
+    // 2. FROM (left) + INVOICE META TABLE (right)
+    // ══════════════════════════════════════════════════════
+    const fromY = y;
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...MGRAY);
+    doc.text("FROM", ML, fromY);
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...NAVY);
+    doc.text("The Ma Foi Foundation", ML, fromY + 6);
+
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DKGRAY);
+    doc.text([
+        "Chennai, Tamil Nadu, India",
+        "info@mafoifoundation.org",
+        "www.mafoifoundation.org",
+    ], ML, fromY + 11.5, { lineHeightFactor: 1.5 });
+
+    // Meta table (right side) — 4 rows, label | value
+    const metaW = 76;
+    const metaX = PW - MR - metaW;
+    const metaRows = [
+        ["Invoice Number", invNumber],
+        ["Invoice Date", fmtDate(invDate)],
+        ["Billing Period", fmtDate(fromDate) + " - " + fmtDate(toDate)],
+        ["Total Due", fmtR(grandTotal)],
+    ];
+    const metaRowH = 7;
+    let metaY = fromY - 4;
+
+    metaRows.forEach((row, i) => {
+        const isLast = i === metaRows.length - 1;
+        doc.setFillColor(...(i % 2 === 0 ? LGRAY : [255,255,255]));
+        if (isLast) doc.setFillColor(...HGRAY);
+        doc.rect(metaX, metaY, metaW * 0.52, metaRowH, "F");
+        doc.rect(metaX + metaW * 0.52, metaY, metaW * 0.48, metaRowH, "F");
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.2);
+        doc.rect(metaX, metaY, metaW * 0.52, metaRowH, "S");
+        doc.rect(metaX + metaW * 0.52, metaY, metaW * 0.48, metaRowH, "S");
+
+        doc.setFont(FONT, isLast ? "bold" : "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...DKGRAY);
+        doc.text(row[0], metaX + 3, metaY + metaRowH / 2 + 1.3);
+
+        doc.setFont(FONT, "bold");
+        doc.setTextColor(...NAVY);
+        const valLines = doc.splitTextToSize(row[1], metaW * 0.48 - 6);
+        doc.text(valLines[0], metaX + metaW * 0.52 + 3, metaY + metaRowH / 2 + 1.3);
+
+        metaY += metaRowH;
+    });
+
+    y = Math.max(fromY + 11.5 + 3 * 4.2, metaY) + 10;
+
+    // ══════════════════════════════════════════════════════
+    // 3. TO (Bill To) — left block and right contact strip use
+    //    the same fixed row baseline (y+6, +11, +16, +21) so
+    //    nothing drifts out of alignment regardless of text length.
+    // ══════════════════════════════════════════════════════
+    const billToTop = y;
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...MGRAY);
+    doc.text("BILL TO", ML, billToTop);
+
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...NAVY);
+    doc.text(invVendorData.vendor_name || "—", ML, billToTop + 6);
+
+    const addrLines = doc.splitTextToSize(invVendorData.company_address || "—", CW * 0.55).slice(0, 2);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DKGRAY);
+    doc.text(addrLines, ML, billToTop + 11, { lineHeightFactor: 1.35 });
+
+    const emailRowY = billToTop + 11 + addrLines.length * 4;
+    doc.text(String(invVendorData.email || "—"), ML, emailRowY);
+
+    // Right-aligned contact strip — same starting row as vendor name (y+6)
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DKGRAY);
+    doc.text("Contact: " + (invVendorData.contact_person || "—"), PW - MR, billToTop + 6, { align: "right" });
+    doc.text("Mobile: " + (invVendorData.mobile || "—"), PW - MR, billToTop + 11, { align: "right" });
+    doc.text("PAN: " + (invVendorData.pan || "—"), PW - MR, billToTop + 16, { align: "right" });
+    if (invVendorData.gst) {
+        doc.text("GST: " + invVendorData.gst, PW - MR, billToTop + 21, { align: "right" });
+    }
+
+    // Next section starts below whichever column (left or right) is taller
+    const leftBottom  = emailRowY;
+    const rightBottom = billToTop + (invVendorData.gst ? 21 : 16);
+    y = Math.max(leftBottom, rightBottom) + 10;
+
+    // ══════════════════════════════════════════════════════
+    // 4. SERVICE TABLE
+    // ══════════════════════════════════════════════════════
+    doc.autoTable({
+        startY: y,
+        margin: { left: ML, right: MR },
+        head: [["Hrs/Qty", "Service", "Rate", "Tax %", "Sub Total"]],
+        body: [[
+            String(qty),
+            desc + "\n" + fmtDate(fromDate) + " to " + fmtDate(toDate),
+            fmtR(rate),
+            (cgstPct + sgstPct).toFixed(2) + "%",
+            fmtR(amount),
+        ]],
+        styles: { font: FONT, fontSize: 9, cellPadding: { top: 4, bottom: 4, left: 4, right: 4 }, textColor: DKGRAY },
+        headStyles: { fillColor: NAVY, textColor: 255, fontStyle: "bold", fontSize: 8.5 },
+        columnStyles: {
+            0: { cellWidth: 18, halign: "center" },
+            1: { cellWidth: 80, halign: "left" },
+            2: { cellWidth: 26, halign: "right" },
+            3: { cellWidth: 18, halign: "center" },
+            4: { cellWidth: 32, halign: "right", fontStyle: "bold" },
+        },
+        tableLineColor: BORDER,
+        tableLineWidth: 0.2,
+        alternateRowStyles: { fillColor: [255,255,255] },
+    });
+
+    y = doc.lastAutoTable.finalY + 6;
+
+    // ══════════════════════════════════════════════════════
+    // 5. TOTALS — right-aligned compact table
+    // ══════════════════════════════════════════════════════
+    const totW = 70;
+    const totX = PW - MR - totW;
+    doc.autoTable({
+        startY: y,
+        margin: { left: totX, right: MR },
+        tableWidth: totW,
+        body: [
+            ["Sub Total", fmtR(amount)],
+            ["CGST @ " + cgstPct + "%", fmtR(cgstAmt)],
+            ["SGST @ " + sgstPct + "%", fmtR(sgstAmt)],
+        ],
+        foot: [["Total", fmtR(grandTotal)]],
+        styles: { font: FONT, fontSize: 9, cellPadding: { top: 3.2, bottom: 3.2, left: 4, right: 4 }, textColor: DKGRAY },
+        columnStyles: { 0: { halign: "left", cellWidth: 38 }, 1: { halign: "right", cellWidth: 32, fontStyle: "bold" } },
+        footStyles: { fillColor: HGRAY, textColor: NAVY, fontStyle: "bold", fontSize: 10 },
+        theme: "plain",
+        tableLineColor: BORDER,
+        tableLineWidth: 0.2,
+        didParseCell: (data) => {
+            if (data.section === "body") {
+                data.cell.styles.lineWidth = { bottom: 0.15 };
+                data.cell.styles.lineColor = BORDER;
+            }
+        },
+    });
+
+    y = doc.lastAutoTable.finalY + 12;
+
+    // ══════════════════════════════════════════════════════
+    // 6. BANK DETAILS (bottom-left, simple text block —
+    //    matches the plain "ANZ Bank / ACC # / BSB #" style)
+    // ══════════════════════════════════════════════════════
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...MGRAY);
+    doc.text("PAYMENT DETAILS", ML, y);
+
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...DKGRAY);
+    doc.text([
+        (invVendorData.bank_name || "—") + (invVendorData.branch_name ? " — " + invVendorData.branch_name : ""),
+        "A/C Holder: " + (invVendorData.account_holder || "—"),
+        "A/C Number: " + (invVendorData.account_number || "—"),
+        "IFSC: " + (invVendorData.ifsc || "—"),
+    ], ML, y + 5.5, { lineHeightFactor: 1.5 });
+
+    // ══════════════════════════════════════════════════════
+    // 7. SIGNATURE (bottom-right, simple)
+    // ══════════════════════════════════════════════════════
+    const sigW = 60;
+    const sigX = PW - MR - sigW;
+    let sigY = y + 22;
+
+    doc.setDrawColor(...DKGRAY);
+    doc.setLineWidth(0.3);
+    doc.line(sigX, sigY, sigX + sigW, sigY);
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...MGRAY);
+    doc.text("Authorised Signatory", sigX + sigW / 2, sigY + 5, { align: "center" });
+
+    // ══════════════════════════════════════════════════════
+    // 8. FOOTER NOTE — pinned near bottom of the single page
+    // ══════════════════════════════════════════════════════
+    const footY = PH - 22;
+    doc.setDrawColor(...BORDER);
+    doc.setLineWidth(0.2);
+    doc.line(ML, footY - 6, PW - MR, footY - 6);
+
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...MGRAY);
+    doc.text("This is a computer-generated invoice from the Vendor Registration Portal of The Ma Foi Foundation.",
+        PW / 2, footY, { align: "center" });
+    doc.text("Generated on " + new Date().toLocaleString("en-IN") + "   |   Page 1/1",
+        PW / 2, footY + 5, { align: "center" });
+
+    // ══════════════════════════════════════════════════════
+    // SAVE
+    // ══════════════════════════════════════════════════════
+    const safeName = (invVendorData.vendor_name || "Vendor").replace(/[^a-zA-Z0-9]/g, "");
+    const fileName = "Invoice_" + safeName + "_" + invNumber + ".pdf";
+    doc.save(fileName);
+
+    // ── Persist to Supabase ────────────────────────────────
+    await db.from("invoices").insert([{
+        vendor_id:           invVendorData.id,
+        invoice_number:      invNumber,
+        invoice_date:        invDate,
+        from_date:           fromDate,
+        to_date:             toDate,
+        service_description: desc,
+        quantity:            qty,
+        rate:                rate,
+        amount:              amount,
+        cgst_percentage:     cgstPct,
+        cgst_amount:         cgstAmt,
+        sgst_percentage:     sgstPct,
+        sgst_amount:         sgstAmt,
+        total_amount:        grandTotal,
+    }]);
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF';
+    document.getElementById("invSuccessFilename").textContent = fileName;
+    const invSuccessModal = new bootstrap.Modal(document.getElementById("invoiceSuccessModal"));
+    invSuccessModal.show();
+    confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } });
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXCEL DOWNLOAD
+// ═══════════════════════════════════════════════════════════
 function verifyAndDownload() {
     resetPwdModal();
     const modal = new bootstrap.Modal(document.getElementById("passwordModal"));
@@ -801,9 +1491,6 @@ async function downloadExcel() {
 
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
 
-    // Force the ID-like columns to be real TEXT cells (type 's', format '@')
-    // so values like "0138053000012118" survive exactly as stored, with
-    // no leading-zero stripping and no scientific-notation conversion.
     const textColIndexes = TEXT_COLUMNS.map(name => headers.indexOf(name));
     const range = XLSX.utils.decode_range(ws['!ref']);
 
@@ -819,7 +1506,6 @@ async function downloadExcel() {
         });
     }
 
-    // Reasonable column widths so the sheet is readable on open
     ws['!cols'] = headers.map(h => ({ wch: Math.max(14, h.length + 4) }));
 
     const wb = XLSX.utils.book_new();
