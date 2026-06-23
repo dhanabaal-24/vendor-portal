@@ -9,134 +9,78 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-body { background:#f4f6f9; }
-.navbar-custom { background:#fff; border:none; border-radius:15px; }
-.logo { height:35px; width:auto; }
-.website-title { font-size:30px; font-weight:700; color:#212529; margin-bottom:5px; }
-.card { border:none; border-radius:15px; }
-.status-pending { color:#ff9800; font-weight:bold; }
-.status-approved { color:green; font-weight:bold; }
-.status-rejected { color:red; font-weight:bold; }
+/* ── Override Bootstrap body bg ── */
+body { background: var(--bg, #dce8f5) !important; }
 
-/* Edit token box */
-.token-box {
-    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-    border: 2px solid #4caf50;
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-top: 18px;
-}
-.token-box h6 { color: #2e7d32; font-weight: 700; font-size: 15px; }
-.token-value {
-    font-family: monospace;
-    font-size: 15px;
-    background: #fff;
-    border: 1px dashed #81c784;
-    border-radius: 8px;
-    padding: 8px 14px;
-    letter-spacing: 1px;
-    word-break: break-all;
-    color: #1b5e20;
-}
-.copy-btn {
-    cursor: pointer;
-    color: #388e3c;
-    font-size: 18px;
-    transition: transform .2s;
-}
-.copy-btn:hover { transform: scale(1.2); }
-
-/* Edit mode banner */
-#editModeBanner {
-    display: none;
-    background: linear-gradient(90deg, #fff3e0, #ffe0b2);
-    border-left: 5px solid #ff9800;
-    border-radius: 12px;
-    padding: 14px 20px;
-    margin-bottom: 18px;
-    font-weight: 600;
-    color: #e65100;
+/* ── Thin top accent stripe on header ── */
+.navbar-custom { position: relative; overflow: hidden; }
+.navbar-custom::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);
+    border-radius: 18px 18px 0 0;
 }
 
-/* Tab pills */
-.mode-tabs .nav-link {
-    border-radius: 10px;
-    font-weight: 600;
-    color: #1565c0;
-}
-.mode-tabs .nav-link.active {
-    background: #1565c0;
-    color: #fff;
+/* ── How-it-works step circles (referral widget style) ── */
+.step-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid #dce6f0; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #1e293b;
+    flex-shrink: 0;
 }
 
-/* Password Modal */
-.pwd-modal-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #1e3d6c, #1565c0);
-    border-radius: 50%;
+/* ── Lookup / invoice verify card inner padding ── */
+#editLookupPanel, #invoiceVerifyCard { padding: 28px 32px; }
+
+/* ── Info hint text ── */
+.form-text { font-size: 12px; }
+
+/* ── Section dividers inside cards ── */
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #94a3b8;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    font-size: 28px;
-    color: white;
+    gap: 10px;
 }
-.pwd-input-wrap {
-    position: relative;
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #dce6f0;
 }
-.pwd-input-wrap .form-control {
-    padding-right: 44px;
-    border-radius: 10px;
-    border: 2px solid #dbe4f0;
-    font-size: 15px;
-    padding: 12px 44px 12px 14px;
-    letter-spacing: 2px;
-}
-.pwd-input-wrap .form-control:focus {
-    border-color: #1565c0;
-    box-shadow: 0 0 0 4px rgba(21,101,192,.12);
-}
-.pwd-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #6c757d;
-    font-size: 18px;
-}
-.pwd-toggle:hover { color: #1565c0; }
-#pwdError {
-    display: none;
-    color: #dc3545;
-    font-size: 13px;
-    margin-top: 6px;
-}
-#pwdError.show { display: block; }
+
+/* ── Download button row ── */
+.dl-row { display: flex; justify-content: flex-end; }
+@media(max-width:768px){ .dl-row { justify-content: center; } }
 </style>
 </head>
 
 <body>
-<div class="container-fluid py-3">
+<div class="container-fluid py-4">
 <div class="container">
 
-<!-- Header -->
-<div class="card shadow-sm navbar-custom p-3 mb-4">
+<!-- ═══ HEADER ═══════════════════════════════════════════ -->
+<div class="card navbar-custom p-4 mb-4">
     <div class="row align-items-center">
         <div class="col-lg-2 col-md-3 col-12 text-center mb-3 mb-md-0">
             <img src="logo.png" class="logo" alt="Logo">
         </div>
         <div class="col-lg-8 col-md-6 col-12 text-center">
             <h1 class="website-title">Vendor Registration Portal</h1>
-            <p class="text-muted mb-0">The Ma Foi Foundation</p>
+            <p class="text-muted mb-0" style="font-size:13px;letter-spacing:.5px;">The Ma Foi Foundation</p>
         </div>
         <div class="col-lg-2 col-md-3 d-none d-md-block"></div>
     </div>
 </div>
 
-<!-- Mode Tabs -->
-<div class="card shadow-sm p-3 mb-4">
+<!-- ═══ MODE TABS ════════════════════════════════════════ -->
+<div class="card p-3 mb-4">
     <ul class="nav nav-pills mode-tabs justify-content-center gap-2" id="modeTabs">
         <li class="nav-item">
             <a class="nav-link active" id="tab-register" href="#" onclick="switchMode('register'); return false;">
@@ -156,18 +100,18 @@ body { background:#f4f6f9; }
     </ul>
 </div>
 
-<!-- Edit Lookup Panel -->
-<div id="editLookupPanel" class="card shadow p-4 mb-4" style="display:none;">
+<!-- ═══ EDIT LOOKUP PANEL ════════════════════════════════ -->
+<div id="editLookupPanel" class="card shadow mb-4" style="display:none;">
     <h4><i class="bi bi-search me-2"></i>Find Your Submission</h4>
-    <p class="text-muted small">Enter the email and edit or invoice token you received when you registered.</p>
-    <div class="row">
-        <div class="col-12 col-md-6 mb-3">
-            <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Registered Email <span class="required">*</span></label>
+    <p class="text-muted small text-center mb-4">Enter the email and edit token you received when you registered.</p>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-5 mb-3">
+            <label class="form-label"><i class="bi bi-envelope-fill"></i>Registered Email <span class="required">*</span></label>
             <input type="email" class="form-control" id="lookupEmail" placeholder="your@email.com">
         </div>
-        <div class="col-12 col-md-6 mb-3">
-            <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit / Invoice Token <span class="required">*</span></label>
-            <input type="text" class="form-control" id="lookupToken" placeholder="Paste your edit / invoice token here" style="font-family:monospace;">
+        <div class="col-12 col-md-5 mb-3">
+            <label class="form-label"><i class="bi bi-key-fill"></i>Edit / Invoice Token <span class="required">*</span></label>
+            <input type="text" class="form-control" id="lookupToken" placeholder="Paste your token here" style="font-family:var(--font-mono, monospace);">
         </div>
     </div>
     <div class="text-center">
@@ -178,24 +122,21 @@ body { background:#f4f6f9; }
     <div id="lookupError" class="alert alert-danger mt-3" style="display:none;"></div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════
-     GENERATE INVOICE PANEL
-════════════════════════════════════════════════════════ -->
+<!-- ═══ INVOICE PANEL ════════════════════════════════════ -->
 <div id="invoicePanel" style="display:none;">
 
-    <!-- Step 1 – Verify Vendor -->
-    <div class="card shadow p-4 mb-4" id="invoiceVerifyCard">
+    <!-- Step 1 – Verify -->
+    <div class="card p-4 mb-4" id="invoiceVerifyCard">
         <h4><i class="bi bi-shield-lock-fill me-2"></i>Generate Vendor Invoice</h4>
-        <p class="text-muted small text-center mb-4">Enter your registered email and edit / invoice token to fetch your vendor details automatically.</p>
-
+        <p class="text-muted small text-center mb-4">Enter your registered email and edit / invoice token to load your vendor details.</p>
         <div class="row justify-content-center">
             <div class="col-12 col-md-5 mb-3">
-                <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Registered Email <span class="required">*</span></label>
+                <label class="form-label"><i class="bi bi-envelope-fill"></i>Registered Email <span class="required">*</span></label>
                 <input type="email" class="form-control" id="invEmail" placeholder="your@email.com">
             </div>
             <div class="col-12 col-md-5 mb-3">
-                <label class="form-label"><i class="bi bi-key-fill me-2"></i>Edit / Invoice Token <span class="required">*</span></label>
-                <input type="text" class="form-control" id="invToken" placeholder="Paste your edit / invoice token" style="font-family:monospace;">
+                <label class="form-label"><i class="bi bi-key-fill"></i>Edit / Invoice Token <span class="required">*</span></label>
+                <input type="text" class="form-control" id="invToken" placeholder="Paste your token" style="font-family:var(--font-mono, monospace);">
             </div>
         </div>
         <div class="text-center">
@@ -206,17 +147,17 @@ body { background:#f4f6f9; }
         <div id="invVerifyError" class="alert alert-danger mt-3" style="display:none;"></div>
     </div>
 
-    <!-- Step 2 – Invoice Form (hidden until vendor fetched) -->
+    <!-- Step 2 – Invoice Form -->
     <div id="invoiceFormSection" style="display:none;">
 
         <!-- Vendor Details (read-only) -->
-        <div class="card shadow p-4 mb-4">
+        <div class="card p-4 mb-4">
             <h4><i class="bi bi-building-fill me-2"></i>Vendor Details</h4>
             <div class="inv-vendor-banner mb-4">
                 <div class="d-flex align-items-center gap-3">
                     <div class="inv-vendor-avatar" id="invVendorAvatar">V</div>
                     <div>
-                        <div class="fw-bold" id="invVendorNameBig" style="font-size:17px;color:var(--navy);">—</div>
+                        <div class="fw-bold" id="invVendorNameBig" style="font-size:16px;color:#0f172a;">—</div>
                         <div class="text-muted small" id="invVendorEmailBig">—</div>
                     </div>
                     <div class="ms-auto">
@@ -225,141 +166,76 @@ body { background:#f4f6f9; }
                 </div>
             </div>
             <div class="row g-3">
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-person-fill me-1"></i>Contact Person</div>
-                        <div class="inv-info-value" id="roContactPerson">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-telephone-fill me-1"></i>Mobile</div>
-                        <div class="inv-info-value" id="roMobile">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-credit-card-2-front-fill me-1"></i>PAN Number</div>
-                        <div class="inv-info-value" id="roPan">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-receipt-cutoff me-1"></i>GST Number</div>
-                        <div class="inv-info-value" id="roGst">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-briefcase-fill me-1"></i>Service Categories</div>
-                        <div class="inv-info-value" id="roService">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="inv-info-block">
-                        <div class="inv-info-label"><i class="bi bi-geo-alt-fill me-1"></i>Address</div>
-                        <div class="inv-info-value" id="roAddress" style="font-size:12px;">—</div>
-                    </div>
-                </div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-person-fill me-1"></i>Contact Person</div><div class="inv-info-value" id="roContactPerson">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-telephone-fill me-1"></i>Mobile</div><div class="inv-info-value" id="roMobile">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-credit-card-2-front-fill me-1"></i>PAN Number</div><div class="inv-info-value" id="roPan">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-receipt-cutoff me-1"></i>GST Number</div><div class="inv-info-value" id="roGst">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-briefcase-fill me-1"></i>Service Categories</div><div class="inv-info-value" id="roService">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-4"><div class="inv-info-block"><div class="inv-info-label"><i class="bi bi-geo-alt-fill me-1"></i>Address</div><div class="inv-info-value" id="roAddress" style="font-size:12px;">—</div></div></div>
             </div>
-
             <hr class="my-4">
             <h5><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
             <div class="row g-3">
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="inv-info-block inv-info-block--bank">
-                        <div class="inv-info-label"><i class="bi bi-person-vcard-fill me-1"></i>Account Holder</div>
-                        <div class="inv-info-value" id="roAccountHolder">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="inv-info-block inv-info-block--bank">
-                        <div class="inv-info-label"><i class="bi bi-bank me-1"></i>Bank Name</div>
-                        <div class="inv-info-value" id="roBankName">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="inv-info-block inv-info-block--bank">
-                        <div class="inv-info-label"><i class="bi bi-123 me-1"></i>Account Number</div>
-                        <div class="inv-info-value" id="roAccountNumber" style="font-family:monospace;letter-spacing:1px;">—</div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="inv-info-block inv-info-block--bank">
-                        <div class="inv-info-label"><i class="bi bi-shield-check me-1"></i>IFSC / Branch</div>
-                        <div class="inv-info-value" id="roIfsc">—</div>
-                    </div>
-                </div>
+                <div class="col-12 col-md-6 col-lg-3"><div class="inv-info-block inv-info-block--bank"><div class="inv-info-label"><i class="bi bi-person-vcard-fill me-1"></i>Account Holder</div><div class="inv-info-value" id="roAccountHolder">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-3"><div class="inv-info-block inv-info-block--bank"><div class="inv-info-label"><i class="bi bi-bank me-1"></i>Bank Name</div><div class="inv-info-value" id="roBankName">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-3"><div class="inv-info-block inv-info-block--bank"><div class="inv-info-label"><i class="bi bi-123 me-1"></i>Account Number</div><div class="inv-info-value" id="roAccountNumber" style="font-family:monospace;letter-spacing:1px;">—</div></div></div>
+                <div class="col-12 col-md-6 col-lg-3"><div class="inv-info-block inv-info-block--bank"><div class="inv-info-label"><i class="bi bi-shield-check me-1"></i>IFSC / Branch</div><div class="inv-info-value" id="roIfsc">—</div></div></div>
             </div>
         </div>
 
         <!-- Invoice Details -->
-        <div class="card shadow p-4 mb-4">
+        <div class="card p-4 mb-4">
             <h4><i class="bi bi-file-earmark-text-fill me-2"></i>Invoice Details</h4>
             <div class="row g-3">
                 <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label"><i class="bi bi-hash me-2"></i>Invoice Number <span class="required">*</span></label>
-                    <input type="text" class="form-control" id="invNumber" placeholder="e.g. TMF-2026-001" required>
+                    <label class="form-label"><i class="bi bi-hash"></i>Invoice Number <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="invNumber" placeholder="e.g. TMF-2026-001">
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label"><i class="bi bi-calendar-event-fill me-2"></i>Invoice Date <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="invDate" required>
+                    <label class="form-label"><i class="bi bi-calendar-event-fill"></i>Invoice Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invDate">
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label"><i class="bi bi-calendar-range-fill me-2"></i>Billing Period — From <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="invFromDate" required>
+                    <label class="form-label"><i class="bi bi-calendar-range-fill"></i>Billing Period — From <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invFromDate">
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
-                    <label class="form-label"><i class="bi bi-calendar-check-fill me-2"></i>Billing Period — To <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="invToDate" required>
+                    <label class="form-label"><i class="bi bi-calendar-check-fill"></i>Billing Period — To <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="invToDate">
                 </div>
                 <div class="col-12 col-lg-8">
-                    <label class="form-label"><i class="bi bi-card-text me-2"></i>Service Description <span class="required">*</span></label>
-                    <textarea class="form-control" id="invDescription" rows="2" placeholder="e.g. Training services for Skill Development programme, Batch #12" required></textarea>
+                    <label class="form-label"><i class="bi bi-card-text"></i>Service Description <span class="required">*</span></label>
+                    <textarea class="form-control" id="invDescription" rows="2" placeholder="e.g. Training services for Skill Development programme, Batch #12"></textarea>
                 </div>
             </div>
-
             <hr class="my-4">
             <h5><i class="bi bi-calculator-fill me-2"></i>Pricing & Tax</h5>
             <div class="row g-3">
                 <div class="col-6 col-md-3">
-                    <label class="form-label"><i class="bi bi-boxes me-2"></i>Quantity <span class="required">*</span></label>
-                    <input type="number" class="form-control inv-calc-input" id="invQty" placeholder="0" min="1" required>
+                    <label class="form-label"><i class="bi bi-boxes"></i>Quantity <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invQty" placeholder="0" min="1">
                 </div>
                 <div class="col-6 col-md-3">
-                    <label class="form-label"><i class="bi bi-currency-rupee me-2"></i>Rate (₹) <span class="required">*</span></label>
-                    <input type="number" class="form-control inv-calc-input" id="invRate" placeholder="0.00" min="0" step="0.01" required>
+                    <label class="form-label"><i class="bi bi-currency-rupee"></i>Rate (₹) <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invRate" placeholder="0.00" min="0" step="0.01">
                 </div>
                 <div class="col-6 col-md-3">
-                    <label class="form-label"><i class="bi bi-percent me-2"></i>CGST % <span class="required">*</span></label>
-                    <input type="number" class="form-control inv-calc-input" id="invCgst" placeholder="9" min="0" max="50" step="0.01" value="9" required>
+                    <label class="form-label"><i class="bi bi-percent"></i>CGST % <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invCgst" placeholder="9" min="0" max="50" step="0.01" value="9">
                 </div>
                 <div class="col-6 col-md-3">
-                    <label class="form-label"><i class="bi bi-percent me-2"></i>SGST % <span class="required">*</span></label>
-                    <input type="number" class="form-control inv-calc-input" id="invSgst" placeholder="9" min="0" max="50" step="0.01" value="9" required>
+                    <label class="form-label"><i class="bi bi-percent"></i>SGST % <span class="required">*</span></label>
+                    <input type="number" class="form-control inv-calc-input" id="invSgst" placeholder="9" min="0" max="50" step="0.01" value="9">
                 </div>
             </div>
-
             <!-- Live Totals -->
             <div class="inv-totals-card mt-4">
                 <div class="inv-totals-title"><i class="bi bi-calculator me-2"></i>Live Summary</div>
                 <div class="inv-totals-grid">
-                    <div class="inv-total-row">
-                        <span class="inv-total-label">Subtotal (Qty × Rate)</span>
-                        <span class="inv-total-value" id="calcAmount">₹ 0.00</span>
-                    </div>
-                    <div class="inv-total-row">
-                        <span class="inv-total-label">CGST Amount</span>
-                        <span class="inv-total-value" id="calcCgst">₹ 0.00</span>
-                    </div>
-                    <div class="inv-total-row">
-                        <span class="inv-total-label">SGST Amount</span>
-                        <span class="inv-total-value" id="calcSgst">₹ 0.00</span>
-                    </div>
-                    <div class="inv-total-row inv-total-row--grand">
-                        <span class="inv-total-label">Grand Total</span>
-                        <span class="inv-total-value" id="calcGrand">₹ 0.00</span>
-                    </div>
+                    <div class="inv-total-row"><span class="inv-total-label">Subtotal (Qty × Rate)</span><span class="inv-total-value" id="calcAmount">₹ 0.00</span></div>
+                    <div class="inv-total-row"><span class="inv-total-label">CGST Amount</span><span class="inv-total-value" id="calcCgst">₹ 0.00</span></div>
+                    <div class="inv-total-row"><span class="inv-total-label">SGST Amount</span><span class="inv-total-value" id="calcSgst">₹ 0.00</span></div>
+                    <div class="inv-total-row inv-total-row--grand"><span class="inv-total-label">Grand Total</span><span class="inv-total-value" id="calcGrand">₹ 0.00</span></div>
                 </div>
             </div>
         </div>
@@ -370,12 +246,11 @@ body { background:#f4f6f9; }
                 <i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF
             </button>
         </div>
+    </div>
+</div>
 
-    </div><!-- /invoiceFormSection -->
-</div><!-- /invoicePanel -->
-
-<!-- Registration / Edit Form -->
-<div class="card shadow p-4 mb-4" id="formCard">
+<!-- ═══ REGISTRATION / EDIT FORM ════════════════════════ -->
+<div class="card p-4 mb-4" id="formCard">
 
     <div id="editModeBanner">
         <i class="bi bi-pencil-square me-2"></i>
@@ -387,89 +262,87 @@ body { background:#f4f6f9; }
 
     <h4><i class="bi bi-building-fill me-2"></i>Vendor Registration</h4>
 
-    <div class="d-flex justify-content-between mb-2 small fw-bold">
-        <span>Vendor Details</span>
-        <span>Documents</span>
-        <span>Bank Details</span>
+    <!-- Progress -->
+    <div class="d-flex justify-content-between mb-2">
+        <span class="section-label" style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:.6px;text-transform:uppercase;">Vendor Details</span>
+        <span class="section-label" style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:.6px;text-transform:uppercase;">Documents</span>
+        <span class="section-label" style="font-size:11px;color:#94a3b8;font-weight:700;letter-spacing:.6px;text-transform:uppercase;">Bank Details</span>
     </div>
-    <div class="progress mb-4" style="height:10px;">
-        <div class="progress-bar bg-primary" style="width:33%"></div>
+    <div class="progress mb-4" style="height:6px;">
+        <div class="progress-bar" style="width:33%"></div>
     </div>
 
     <form id="vendorForm">
-        <div class="row">
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-building-fill me-2"></i>Vendor Name <span class="required">*</span></label>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-building-fill"></i>Vendor Name <span class="required">*</span></label>
                 <input type="text" class="form-control" id="vendorName" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-person-fill me-2"></i>Contact Person <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-person-fill"></i>Contact Person <span class="required">*</span></label>
                 <input type="text" class="form-control" id="contactPerson" required>
             </div>
-            <div class="col-md-12 mb-3">
-                <label class="form-label"><i class="bi bi-geo-alt-fill me-2"></i>Company Address <span class="required">*</span></label>
+            <div class="col-12">
+                <label class="form-label"><i class="bi bi-geo-alt-fill"></i>Company Address <span class="required">*</span></label>
                 <textarea class="form-control" id="companyAddress" rows="3" required></textarea>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Email Address <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-envelope-fill"></i>Email Address <span class="required">*</span></label>
                 <input type="email" class="form-control" id="email" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-telephone-fill me-2"></i>Mobile Number <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-telephone-fill"></i>Mobile Number <span class="required">*</span></label>
                 <input type="tel" class="form-control" id="mobile" pattern="[0-9]{10}" maxlength="10" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-phone-fill me-2"></i>Alternate Mobile Number <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-phone-fill"></i>Alternate Mobile Number <span class="required">*</span></label>
                 <input type="tel" class="form-control" id="alternateMobile" pattern="[0-9]{10}" maxlength="10" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-credit-card-2-front-fill me-2"></i>PAN Number <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-credit-card-2-front-fill"></i>PAN Number <span class="required">*</span></label>
                 <input type="text" class="form-control" id="pan" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-file-earmark-arrow-up-fill me-2"></i>PAN Card Upload <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-file-earmark-arrow-up-fill"></i>PAN Card Upload <span class="required">*</span></label>
                 <input type="file" class="form-control" id="panFile" accept=".pdf,.jpg,.jpeg,.png">
-                <div id="panFileHint" class="form-text text-muted" style="display:none;">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
-                    Existing file kept. Upload a new one only if you want to replace it.
+                <div id="panFileHint" class="form-text text-success mt-1" style="display:none;">
+                    <i class="bi bi-check-circle-fill me-1"></i>Existing file kept. Upload a new one only to replace it.
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-receipt-cutoff me-2"></i>GST Number (Optional)</label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-receipt-cutoff"></i>GST Number <span class="text-muted fw-normal">(Optional)</span></label>
                 <input type="text" class="form-control" id="gst">
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-cloud-upload-fill me-2"></i>GST Certificate Upload (Optional)</label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-cloud-upload-fill"></i>GST Certificate <span class="text-muted fw-normal">(Optional)</span></label>
                 <input type="file" class="form-control" id="gstFile" accept=".pdf,.jpg,.jpeg,.png">
-                <div id="gstFileHint" class="form-text text-muted" style="display:none;">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
-                    Existing file kept. Upload a new one only if you want to replace it.
+                <div id="gstFileHint" class="form-text text-success mt-1" style="display:none;">
+                    <i class="bi bi-check-circle-fill me-1"></i>Existing file kept.
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-file-earmark-text-fill me-2"></i>Upload Signed Agreement / Contract <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-file-earmark-text-fill"></i>Signed Agreement / Contract <span class="required">*</span></label>
                 <input type="file" class="form-control" id="agreementFile" accept=".pdf,.jpg,.jpeg,.png">
-                <div id="agreementFileHint" class="form-text text-muted" style="display:none;">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
-                    Existing file kept. Upload a new one only if you want to replace it.
+                <div id="agreementFileHint" class="form-text text-success mt-1" style="display:none;">
+                    <i class="bi bi-check-circle-fill me-1"></i>Existing file kept.
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-calendar-event-fill me-2"></i>Date of Agreement <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-calendar-event-fill"></i>Date of Agreement <span class="required">*</span></label>
                 <input type="date" class="form-control" id="agreementDate" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-clock-history me-2"></i>Validity of Agreement <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-clock-history"></i>Validity of Agreement <span class="required">*</span></label>
                 <select class="form-select" id="agreementValidity" required>
                     <option value="">Select Validity</option>
-                    <option value="Less than 1 Year">Less than 1 Year</option> 
+                    <option value="Less than 1 Year">Less than 1 Year</option>
                     <option value="1 Year">1 Year</option>
                     <option value="2 Years">2 Years</option>
                     <option value="3 Years">3 Years</option>
                 </select>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-briefcase-fill me-2"></i>Service Categories <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-briefcase-fill"></i>Service Categories <span class="required">*</span></label>
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Select Service Categories
@@ -490,27 +363,27 @@ body { background:#f4f6f9; }
 
         <hr class="my-4">
         <h5><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
-        <div class="row">
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-bank me-2"></i>Bank Account Number <span class="required">*</span></label>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-bank"></i>Bank Account Number <span class="required">*</span></label>
                 <input type="text" class="form-control" id="accountNumber" inputmode="numeric" maxlength="18" oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-person-vcard-fill me-2"></i>Account Holder Name <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-person-vcard-fill"></i>Account Holder Name <span class="required">*</span></label>
                 <input type="text" class="form-control" id="accountHolder" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-bank2 me-2"></i>Bank Name <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-bank2"></i>Bank Name <span class="required">*</span></label>
                 <input type="text" class="form-control" id="bankName" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label"><i class="bi bi-shield-check me-2"></i>IFSC Code <span class="required">*</span></label>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-shield-check"></i>IFSC Code <span class="required">*</span></label>
                 <input type="text" class="form-control" id="ifsc" required>
             </div>
-            <div class="col-12 col-md-6 mb-3">
-    <label class="form-label"><i class="bi bi-signpost-fill me-2"></i>Branch Name <span class="required">*</span></label>
-    <input type="text" class="form-control" id="branchName" placeholder="e.g. Anna Nagar Branch" required>
-</div>
+            <div class="col-12 col-md-6">
+                <label class="form-label"><i class="bi bi-signpost-fill"></i>Branch Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="branchName" placeholder="e.g. Anna Nagar Branch" required>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -519,14 +392,14 @@ body { background:#f4f6f9; }
     </form>
 </div>
 
-<!-- Download Excel -->
-<div class="text-center mb-3 d-grid gap-2 d-md-block">
+<!-- ═══ DOWNLOAD ROW ══════════════════════════════════════ -->
+<div class="dl-row mb-4">
     <button class="btn btn-success" onclick="verifyAndDownload()">
         <i class="bi bi-file-earmark-arrow-down me-2"></i>Download Vendor Data
     </button>
 </div>
 
-<!-- Success Modal (Registration) -->
+<!-- ═══ SUCCESS MODAL (Registration) ════════════════════ -->
 <div class="modal fade" id="successModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg text-center p-4">
@@ -538,25 +411,22 @@ body { background:#f4f6f9; }
                     <div class="icon-fix"></div>
                 </div>
             </div>
-            <h3 class="mt-3 text-success fw-bold">Registration Successful!</h3>
+            <h3 class="mt-3 fw-bold" style="color:#16a34a;">Registration Successful!</h3>
             <p class="text-muted mb-3">Thank you for registering with The Ma Foi Foundation.</p>
-
-            <!-- Token display inside modal -->
             <div class="token-box text-start">
                 <h6><i class="bi bi-key-fill me-2"></i>Your Edit / Invoice Token — Save this!</h6>
-                <p class="small text-muted mb-2">You'll need this token + your email to edit your submission later.</p>
+                <p class="small text-muted mb-2">You'll need this token + your email to edit your submission or generate invoices.</p>
                 <div class="d-flex align-items-center gap-2">
                     <div class="token-value flex-grow-1" id="modalTokenDisplay">—</div>
                     <i class="bi bi-clipboard copy-btn" title="Copy token" onclick="copyToken()"></i>
                 </div>
             </div>
-
             <button type="button" class="btn btn-primary px-4 mt-3" data-bs-dismiss="modal">Done</button>
         </div>
     </div>
 </div>
 
-<!-- Update Success Modal -->
+<!-- ═══ UPDATE SUCCESS MODAL ════════════════════════════ -->
 <div class="modal fade" id="updateModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg text-center p-4">
@@ -568,17 +438,14 @@ body { background:#f4f6f9; }
                     <div class="icon-fix"></div>
                 </div>
             </div>
-            <h3 class="mt-3 text-success fw-bold">Submission Updated!</h3>
+            <h3 class="mt-3 fw-bold" style="color:#16a34a;">Submission Updated!</h3>
             <p class="text-muted mb-3">Your vendor details have been successfully updated.</p>
             <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal" onclick="cancelEdit()">Done</button>
         </div>
     </div>
 </div>
 
-</div>
-</div>
-
-<!-- Invoice Success Modal -->
+<!-- ═══ INVOICE SUCCESS MODAL ════════════════════════════ -->
 <div class="modal fade" id="invoiceSuccessModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg text-center p-4">
@@ -590,13 +457,43 @@ body { background:#f4f6f9; }
                     <div class="icon-fix"></div>
                 </div>
             </div>
-            <h3 class="mt-3 fw-bold" style="color:var(--navy);">Invoice Generated!</h3>
+            <h3 class="mt-3 fw-bold" style="color:#0f172a;">Invoice Generated!</h3>
             <p class="text-muted mb-1">Your invoice has been saved and the PDF is downloading.</p>
             <p class="small text-muted mb-3" id="invSuccessFilename" style="font-family:monospace;font-size:12px;"></p>
             <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Done</button>
         </div>
     </div>
 </div>
+
+<!-- ═══ PASSWORD MODAL ════════════════════════════════════ -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+        <div class="modal-content border-0 shadow-lg p-4" style="border-radius:20px;">
+            <div class="pwd-modal-icon">
+                <i class="bi bi-lock-fill"></i>
+            </div>
+            <h5 class="text-center fw-bold mb-1" style="color:#0f172a;">Admin Access Required</h5>
+            <p class="text-center text-muted small mb-4">Enter the TMF Admin Password to download vendor data.</p>
+            <div class="pwd-input-wrap mb-1">
+                <input type="password" class="form-control" id="pwdInput" placeholder="Enter password"
+                    onkeydown="if(event.key==='Enter') submitPassword()">
+                <i class="bi bi-eye pwd-toggle" id="pwdToggleIcon" onclick="togglePwdVisibility()"></i>
+            </div>
+            <div id="pwdError">
+                <i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal" onclick="resetPwdModal()">Cancel</button>
+                <button class="btn btn-primary flex-fill" id="pwdSubmitBtn" onclick="submitPassword()">
+                    <i class="bi bi-download me-2"></i>Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /container -->
+</div><!-- /container-fluid -->
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -612,15 +509,13 @@ const SUPABASE_KEY = "sb_publishable_iaGXvmD722n-wCGh5ovDTw_UcXkirpv";
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ─── State ───────────────────────────────────────────────
 let isEditMode = false;
-let editRecordId = null;       // numeric PK of the row being edited
+let editRecordId = null;
 let existingPanUrl = "";
 let existingGstUrl = "";
 let existingAgreementUrl = "";
 let generatedToken = "";
 
-// ─── Utility: generate UUID token ────────────────────────
 function generateToken() {
     return crypto.randomUUID
         ? crypto.randomUUID()
@@ -630,7 +525,6 @@ function generateToken() {
         });
 }
 
-// ─── Copy token to clipboard ─────────────────────────────
 function copyToken() {
     const val = document.getElementById("modalTokenDisplay").textContent;
     navigator.clipboard.writeText(val).then(() => {
@@ -640,144 +534,99 @@ function copyToken() {
     });
 }
 
-// ─── Switch between Register / Edit-Lookup / Invoice modes ──
 function switchMode(mode) {
     document.getElementById("tab-register").classList.toggle("active", mode === "register");
     document.getElementById("tab-edit").classList.toggle("active", mode === "edit-lookup");
     document.getElementById("tab-invoice").classList.toggle("active", mode === "invoice");
-
     document.getElementById("editLookupPanel").style.display  = (mode === "edit-lookup") ? "block" : "none";
     document.getElementById("formCard").style.display         = (mode === "register")    ? "block" : "none";
     document.getElementById("invoicePanel").style.display     = (mode === "invoice")     ? "block" : "none";
-
     if (mode === "register" && isEditMode) cancelEdit();
 }
 
-// ─── Cancel edit, return to clean register form ───────────
 function cancelEdit() {
     isEditMode = false;
     editRecordId = null;
     existingPanUrl = existingGstUrl = existingAgreementUrl = "";
-
     document.getElementById("editModeBanner").style.display = "none";
     document.getElementById("submitBtn").innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
-
-    // Restore file required attributes
     document.getElementById("panFile").setAttribute("required", "");
     document.getElementById("agreementFile").setAttribute("required", "");
-
-    // Hide hints
     ["panFileHint","gstFileHint","agreementFileHint"].forEach(id => {
         document.getElementById(id).style.display = "none";
     });
-
     document.getElementById("vendorForm").reset();
     updateServiceDropdownLabel();
     switchMode("register");
 }
 
-// ─── Look up vendor by email + token ─────────────────────
 async function lookupVendor() {
     const email = document.getElementById("lookupEmail").value.trim().toLowerCase();
     const token = document.getElementById("lookupToken").value.trim();
     const errBox = document.getElementById("lookupError");
     errBox.style.display = "none";
-
     if (!email || !token) {
         errBox.textContent = "Please enter both email and edit / invoice token.";
-        errBox.style.display = "block";
-        return;
+        errBox.style.display = "block"; return;
     }
-
     const btn = document.querySelector("#editLookupPanel .btn-primary");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
-
-    const { data, error } = await db
-        .from("vendors")
-        .select("*")
-        .ilike("email", email)
-        .eq("edit_token", token)
-        .maybeSingle();
-
+    const { data, error } = await db.from("vendors").select("*").ilike("email", email).eq("edit_token", token).maybeSingle();
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-search me-2"></i>Find My Submission';
-
     if (error || !data) {
         errBox.textContent = "No matching record found. Please check your email and token.";
-        errBox.style.display = "block";
-        return;
+        errBox.style.display = "block"; return;
     }
-
-    // Found — load into form
     loadVendorIntoForm(data);
 }
 
-// ─── Populate form with existing data ────────────────────
 function loadVendorIntoForm(v) {
     isEditMode = true;
     editRecordId = v.id;
     existingPanUrl = v.pan_file || "";
     existingGstUrl = v.gst_file || "";
     existingAgreementUrl = v.agreement_file || "";
-
-    document.getElementById("vendorName").value     = v.vendor_name || "";
-    document.getElementById("contactPerson").value  = v.contact_person || "";
-    document.getElementById("companyAddress").value = v.company_address || "";
-    document.getElementById("email").value          = v.email || "";
-    document.getElementById("mobile").value         = v.mobile || "";
-    document.getElementById("alternateMobile").value= v.alternate_mobile || "";
-    document.getElementById("pan").value            = v.pan || "";
-    document.getElementById("gst").value            = v.gst || "";
-    document.getElementById("agreementDate").value  = v.agreement_date || "";
+    document.getElementById("vendorName").value      = v.vendor_name || "";
+    document.getElementById("contactPerson").value   = v.contact_person || "";
+    document.getElementById("companyAddress").value  = v.company_address || "";
+    document.getElementById("email").value           = v.email || "";
+    document.getElementById("mobile").value          = v.mobile || "";
+    document.getElementById("alternateMobile").value = v.alternate_mobile || "";
+    document.getElementById("pan").value             = v.pan || "";
+    document.getElementById("gst").value             = v.gst || "";
+    document.getElementById("agreementDate").value   = v.agreement_date || "";
     document.getElementById("agreementValidity").value = v.agreement_validity || "";
-    document.getElementById("accountNumber").value  = v.account_number || "";
-    document.getElementById("accountHolder").value  = v.account_holder || "";
-    document.getElementById("bankName").value       = v.bank_name || "";
-    document.getElementById("ifsc").value           = v.ifsc || "";
-    document.getElementById("branchName").value = v.branch_name || "";
-
-    // Services
+    document.getElementById("accountNumber").value   = v.account_number || "";
+    document.getElementById("accountHolder").value   = v.account_holder || "";
+    document.getElementById("bankName").value        = v.bank_name || "";
+    document.getElementById("ifsc").value            = v.ifsc || "";
+    document.getElementById("branchName").value      = v.branch_name || "";
     const services = Array.isArray(v.service) ? v.service : [];
-    document.querySelectorAll(".service-checkbox").forEach(cb => {
-        cb.checked = services.includes(cb.value);
-    });
+    document.querySelectorAll(".service-checkbox").forEach(cb => { cb.checked = services.includes(cb.value); });
     updateServiceDropdownLabel();
-
-    // File hints — files are optional in edit mode
     document.getElementById("panFile").removeAttribute("required");
     document.getElementById("agreementFile").removeAttribute("required");
-
     if (existingPanUrl)       document.getElementById("panFileHint").style.display = "block";
     if (existingGstUrl)       document.getElementById("gstFileHint").style.display = "block";
     if (existingAgreementUrl) document.getElementById("agreementFileHint").style.display = "block";
-
-    // Show edit banner & update button
-    document.getElementById("editModeBanner").style.display = "block";
+    document.getElementById("editModeBanner").style.display = "flex";
     document.getElementById("submitBtn").innerHTML = '<i class="bi bi-save-fill me-2"></i>Update Submission';
-
-    // Show form, hide lookup panel
     document.getElementById("editLookupPanel").style.display = "none";
     document.getElementById("formCard").style.display = "block";
     document.getElementById("tab-register").classList.add("active");
     document.getElementById("tab-edit").classList.remove("active");
-
-    // Scroll to top of form
     document.getElementById("formCard").scrollIntoView({ behavior: "smooth" });
 }
 
-// ─── Update dropdown button label ────────────────────────
 function updateServiceDropdownLabel() {
     const checked = Array.from(document.querySelectorAll(".service-checkbox:checked")).map(c => c.value);
     const btn = document.querySelector(".dropdown-toggle");
     btn.textContent = checked.length > 0 ? checked.join(", ") : "Select Service Categories";
 }
+document.querySelectorAll(".service-checkbox").forEach(cb => { cb.addEventListener("change", updateServiceDropdownLabel); });
 
-document.querySelectorAll(".service-checkbox").forEach(cb => {
-    cb.addEventListener("change", updateServiceDropdownLabel);
-});
-
-// ─── Upload helper ────────────────────────────────────────
 async function uploadFile(file, prefix) {
     const fileName = Date.now() + "_" + prefix + "_" + file.name;
     const { error } = await db.storage.from("vendor-documents").upload(fileName, file);
@@ -785,138 +634,76 @@ async function uploadFile(file, prefix) {
     return `${SUPABASE_URL}/storage/v1/object/public/vendor-documents/${fileName}`;
 }
 
-// ─── Form Submit (Register OR Update) ────────────────────
 document.getElementById("vendorForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
     const btn = document.getElementById("submitBtn");
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' +
-                    (isEditMode ? "Updating..." : "Submitting...");
-
-    // Validate mobile
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (isEditMode ? "Updating..." : "Submitting...");
     const mobile = document.getElementById("mobile").value.trim();
     const alternateMobile = document.getElementById("alternateMobile").value.trim();
     if (!/^\d{10}$/.test(mobile)) {
         alert("Mobile Number must contain exactly 10 digits.");
         btn.disabled = false;
-        btn.innerHTML = isEditMode
-            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
-            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        btn.innerHTML = isEditMode ? '<i class="bi bi-save-fill me-2"></i>Update Submission' : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
         return;
     }
     if (!/^\d{10}$/.test(alternateMobile)) {
         alert("Alternate Mobile Number must contain exactly 10 digits.");
         btn.disabled = false;
-        btn.innerHTML = isEditMode
-            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
-            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        btn.innerHTML = isEditMode ? '<i class="bi bi-save-fill me-2"></i>Update Submission' : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
         return;
     }
-
-    // Validate services
-    const selectedServices = Array.from(
-        document.querySelectorAll(".service-checkbox:checked")
-    ).map(cb => cb.value);
+    const selectedServices = Array.from(document.querySelectorAll(".service-checkbox:checked")).map(cb => cb.value);
     if (selectedServices.length === 0) {
         alert("Please select at least one Service Category.");
         btn.disabled = false;
-        btn.innerHTML = isEditMode
-            ? '<i class="bi bi-save-fill me-2"></i>Update Submission'
-            : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
+        btn.innerHTML = isEditMode ? '<i class="bi bi-save-fill me-2"></i>Update Submission' : '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
         return;
     }
-
-    // Validate files for NEW registration
     if (!isEditMode) {
-        if (!document.getElementById("panFile").files[0]) {
-            alert("PAN file is required");
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
-            return;
-        }
-        if (!document.getElementById("agreementFile").files[0]) {
-            alert("Agreement file is required");
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
-            return;
-        }
+        if (!document.getElementById("panFile").files[0]) { alert("PAN file is required"); btn.disabled = false; btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor'; return; }
+        if (!document.getElementById("agreementFile").files[0]) { alert("Agreement file is required"); btn.disabled = false; btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor'; return; }
     }
-
-    // Upload files (new uploads replace old; if no new file, keep existing URL)
     const panFileInput = document.getElementById("panFile").files[0];
     const gstFileInput = document.getElementById("gstFile").files[0];
     const agreementFileInput = document.getElementById("agreementFile").files[0];
-
-    let panUrl       = existingPanUrl;
-    let gstUrl       = existingGstUrl;
-    let agreementUrl = existingAgreementUrl;
-
+    let panUrl = existingPanUrl, gstUrl = existingGstUrl, agreementUrl = existingAgreementUrl;
     if (panFileInput)       panUrl       = await uploadFile(panFileInput, "PAN");
     if (gstFileInput)       gstUrl       = await uploadFile(gstFileInput, "GST");
     if (agreementFileInput) agreementUrl = await uploadFile(agreementFileInput, "AGREEMENT");
-
     const vendorData = {
-        vendor_name:        document.getElementById("vendorName").value,
-        contact_person:     document.getElementById("contactPerson").value,
-        company_address:    document.getElementById("companyAddress").value,
-        email:              document.getElementById("email").value,
-        mobile:             mobile,
-        alternate_mobile:   alternateMobile,
-        pan:                document.getElementById("pan").value,
-        gst:                document.getElementById("gst").value,
-        service:            selectedServices,
-        account_number:     document.getElementById("accountNumber").value,
-        account_holder:     document.getElementById("accountHolder").value,
-        bank_name:          document.getElementById("bankName").value,
-        ifsc:               document.getElementById("ifsc").value,
+        vendor_name: document.getElementById("vendorName").value,
+        contact_person: document.getElementById("contactPerson").value,
+        company_address: document.getElementById("companyAddress").value,
+        email: document.getElementById("email").value,
+        mobile, alternate_mobile: alternateMobile,
+        pan: document.getElementById("pan").value,
+        gst: document.getElementById("gst").value,
+        service: selectedServices,
+        account_number: document.getElementById("accountNumber").value,
+        account_holder: document.getElementById("accountHolder").value,
+        bank_name: document.getElementById("bankName").value,
+        ifsc: document.getElementById("ifsc").value,
         branch_name: document.getElementById("branchName").value,
-        agreement_date:     document.getElementById("agreementDate").value,
+        agreement_date: document.getElementById("agreementDate").value,
         agreement_validity: document.getElementById("agreementValidity").value,
-        pan_file:           panUrl,
-        gst_file:           gstUrl,
-        agreement_file:     agreementUrl,
+        pan_file: panUrl, gst_file: gstUrl, agreement_file: agreementUrl,
     };
-
     if (isEditMode) {
-        // ── UPDATE existing row ──
-        const { error } = await db
-            .from("vendors")
-            .update(vendorData)
-            .eq("id", editRecordId);
-
+        const { error } = await db.from("vendors").update(vendorData).eq("id", editRecordId);
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-save-fill me-2"></i>Update Submission';
-
-        if (error) {
-            console.error("Update Error:", error);
-            alert("Error updating vendor: " + error.message);
-            return;
-        }
-
+        if (error) { console.error("Update Error:", error); alert("Error updating vendor: " + error.message); return; }
         const updateModal = new bootstrap.Modal(document.getElementById("updateModal"));
         updateModal.show();
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-
     } else {
-        // ── INSERT new row (with token) ──
         generatedToken = generateToken();
         vendorData.edit_token = generatedToken;
-
-        const { data, error } = await db
-            .from("vendors")
-            .insert([vendorData])
-            .select();
-
+        const { data, error } = await db.from("vendors").insert([vendorData]).select();
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Register Vendor';
-
-        if (error) {
-            console.error("Insert Error:", error);
-            alert("Error saving vendor: " + error.message);
-            return;
-        }
-
+        if (error) { console.error("Insert Error:", error); alert("Error saving vendor: " + error.message); return; }
         document.getElementById("modalTokenDisplay").textContent = generatedToken;
         const successModal = new bootstrap.Modal(document.getElementById("successModal"));
         successModal.show();
@@ -926,10 +713,7 @@ document.getElementById("vendorForm").addEventListener("submit", async function(
     }
 });
 
-// ═══════════════════════════════════════════════════════════
-// INVOICE MODULE
-// ═══════════════════════════════════════════════════════════
-
+// ── INVOICE MODULE ─────────────────────────────────────────
 let invVendorData = null;
 
 async function fetchVendorForInvoice() {
@@ -937,33 +721,14 @@ async function fetchVendorForInvoice() {
     const token  = document.getElementById("invToken").value.trim();
     const errBox = document.getElementById("invVerifyError");
     errBox.style.display = "none";
-
-    if (!email || !token) {
-        errBox.textContent = "Please enter both your registered email and edit / invoice token.";
-        errBox.style.display = "block";
-        return;
-    }
-
+    if (!email || !token) { errBox.textContent = "Please enter both your registered email and edit / invoice token."; errBox.style.display = "block"; return; }
     const btn = document.getElementById("fetchVendorBtn");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Fetching...';
-
-    const { data, error } = await db
-        .from("vendors")
-        .select("*")
-        .ilike("email", email)
-        .eq("edit_token", token)
-        .maybeSingle();
-
+    const { data, error } = await db.from("vendors").select("*").ilike("email", email).eq("edit_token", token).maybeSingle();
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-search me-2"></i>Fetch Vendor Details';
-
-    if (error || !data) {
-        errBox.textContent = "Vendor not found. Please verify the Email and Edit / Invoice Token.";
-        errBox.style.display = "block";
-        return;
-    }
-
+    if (error || !data) { errBox.textContent = "Vendor not found. Please verify your Email and Token."; errBox.style.display = "block"; return; }
     invVendorData = data;
     populateInvoiceVendorFields(data);
     document.getElementById("invoiceFormSection").style.display = "block";
@@ -989,13 +754,13 @@ function populateInvoiceVendorFields(v) {
 }
 
 function recalcInvoice() {
-    const qty     = parseFloat(document.getElementById("invQty").value)  || 0;
-    const rate    = parseFloat(document.getElementById("invRate").value) || 0;
+    const qty = parseFloat(document.getElementById("invQty").value) || 0;
+    const rate = parseFloat(document.getElementById("invRate").value) || 0;
     const cgstPct = parseFloat(document.getElementById("invCgst").value) || 0;
     const sgstPct = parseFloat(document.getElementById("invSgst").value) || 0;
-    const amount    = qty * rate;
-    const cgstAmt   = amount * cgstPct / 100;
-    const sgstAmt   = amount * sgstPct / 100;
+    const amount = qty * rate;
+    const cgstAmt = amount * cgstPct / 100;
+    const sgstAmt = amount * sgstPct / 100;
     const grandTotal = amount + cgstAmt + sgstAmt;
     const fmt = v => "\u20B9 " + v.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     document.getElementById("calcAmount").textContent = fmt(amount);
@@ -1038,15 +803,8 @@ function amountInWords(amount) {
     return words(rupees) + " Rupees" + (paise > 0 ? " and " + words(paise) + " Paise" : "") + " Only";
 }
 
-// ═══════════════════════════════════════════════════════════
-// REPLACEMENT for generateInvoicePDF() — paste this over the
-// existing function in your <script> block.
-// Simple, single-page layout (reference: Sliced Invoices style)
-// with a diagonal "THE MA FOI FOUNDATION" watermark.
-// ═══════════════════════════════════════════════════════════
 async function generateInvoicePDF() {
     if (!invVendorData) { alert("Please fetch vendor details first."); return; }
-
     const invNumber = document.getElementById("invNumber").value.trim();
     const invDate   = document.getElementById("invDate").value;
     const fromDate  = document.getElementById("invFromDate").value;
@@ -1056,24 +814,19 @@ async function generateInvoicePDF() {
     const rate      = parseFloat(document.getElementById("invRate").value) || 0;
     const cgstPct   = parseFloat(document.getElementById("invCgst").value) || 0;
     const sgstPct   = parseFloat(document.getElementById("invSgst").value) || 0;
-
     if (!invNumber) { alert("Please enter an Invoice Number."); return; }
     if (!invDate)   { alert("Please select an Invoice Date."); return; }
     if (!fromDate || !toDate) { alert("Please select the billing period dates."); return; }
     if (!desc)      { alert("Please enter the Service Description."); return; }
     if (qty <= 0)   { alert("Quantity must be greater than 0."); return; }
     if (rate <= 0)  { alert("Rate must be greater than 0."); return; }
-
-    const amount     = qty * rate;
-    const cgstAmt    = amount * cgstPct / 100;
-    const sgstAmt    = amount * sgstPct / 100;
+    const amount = qty * rate;
+    const cgstAmt = amount * cgstPct / 100;
+    const sgstAmt = amount * sgstPct / 100;
     const grandTotal = amount + cgstAmt + sgstAmt;
-
     const btn = document.getElementById("generatePdfBtn");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating PDF...';
-
-    // ── Duplicate invoice number check ─────────────────────
     const { data: dupCheck } = await db.from("invoices").select("id").eq("invoice_number", invNumber).maybeSingle();
     if (dupCheck) {
         alert('Invoice Number "' + invNumber + '" already exists. Please use a unique invoice number.');
@@ -1081,21 +834,12 @@ async function generateInvoicePDF() {
         btn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF';
         return;
     }
-
-    // ══════════════════════════════════════════════════════
-    // PDF SETUP
-    // ══════════════════════════════════════════════════════
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
-    // San Francisco can't be embedded in PDFs (Apple licensing). Helvetica
-    // is jsPDF's built-in metric-equivalent and is used throughout.
     const FONT = "helvetica";
-
     const PW = 210, PH = 297;
     const ML = 18, MR = 18;
-    const CW = PW - ML - MR;   // 174mm usable width
-
+    const CW = PW - ML - MR;
     const NAVY   = [11, 31, 58];
     const GOLD   = [200, 151, 58];
     const DKGRAY = [55, 65, 81];
@@ -1103,283 +847,96 @@ async function generateInvoicePDF() {
     const LGRAY  = [245, 247, 250];
     const HGRAY  = [235, 238, 243];
     const BORDER = [220, 226, 235];
-
-    function fmtR(v) {
-        return "Rs. " + parseFloat(v).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-    function fmtDate(d) {
-        if (!d) return "—";
-        const dt = new Date(d + "T00:00:00");
-        return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 1. TITLE ROW — org name (left) + "INVOICE" (right)
-    // ══════════════════════════════════════════════════════
+    function fmtR(v) { return "Rs. " + parseFloat(v).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function fmtD(d) { if (!d) return "—"; const dt = new Date(d + "T00:00:00"); return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }); }
     let y = 20;
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(15);
-    doc.setTextColor(...NAVY);
+    doc.setFont(FONT, "bold"); doc.setFontSize(15); doc.setTextColor(...NAVY);
     doc.text("THE MA FOI FOUNDATION", ML, y);
-
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...MGRAY);
+    doc.setFont(FONT, "normal"); doc.setFontSize(8.5); doc.setTextColor(...MGRAY);
     doc.text("Our Society, Our Responsibility", ML, y + 5.5);
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(24);
-    doc.setTextColor(...NAVY);
+    doc.setFont(FONT, "bold"); doc.setFontSize(24); doc.setTextColor(...NAVY);
     doc.text("INVOICE", PW - MR, y + 2, { align: "right" });
-
     y += 14;
-    doc.setDrawColor(...GOLD);
-    doc.setLineWidth(0.8);
-    doc.line(ML, y, PW - MR, y);
-
+    doc.setDrawColor(...GOLD); doc.setLineWidth(0.8); doc.line(ML, y, PW - MR, y);
     y += 10;
-
-    // ══════════════════════════════════════════════════════
-    // 2. FROM (left) + INVOICE META TABLE (right)
-    // ══════════════════════════════════════════════════════
     const fromY = y;
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...MGRAY);
+    doc.setFont(FONT, "bold"); doc.setFontSize(8.5); doc.setTextColor(...MGRAY);
     doc.text("FROM", ML, fromY);
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...NAVY);
+    doc.setFont(FONT, "bold"); doc.setFontSize(9.5); doc.setTextColor(...NAVY);
     doc.text("The Ma Foi Foundation", ML, fromY + 6);
-
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...DKGRAY);
-    doc.text([
-        "Chennai, Tamil Nadu, India",
-        "info@mafoifoundation.org",
-        "www.mafoifoundation.org",
-    ], ML, fromY + 11.5, { lineHeightFactor: 1.5 });
-
-    // Meta table (right side) — 4 rows, label | value
-    const metaW = 76;
-    const metaX = PW - MR - metaW;
-    const metaRows = [
-        ["Invoice Number", invNumber],
-        ["Invoice Date", fmtDate(invDate)],
-        ["Billing Period", fmtDate(fromDate) + " - " + fmtDate(toDate)],
-        ["Total Due", fmtR(grandTotal)],
-    ];
-    const metaRowH = 7;
-    let metaY = fromY - 4;
-
+    doc.setFont(FONT, "normal"); doc.setFontSize(8.5); doc.setTextColor(...DKGRAY);
+    doc.text(["Chennai, Tamil Nadu, India", "info@mafoifoundation.org", "www.mafoifoundation.org"], ML, fromY + 11.5, { lineHeightFactor: 1.5 });
+    const metaW = 76; const metaX = PW - MR - metaW;
+    const metaRows = [["Invoice Number", invNumber],["Invoice Date", fmtD(invDate)],["Billing Period", fmtD(fromDate) + " - " + fmtD(toDate)],["Total Due", fmtR(grandTotal)]];
+    const metaRowH = 7; let metaY = fromY - 4;
     metaRows.forEach((row, i) => {
         const isLast = i === metaRows.length - 1;
-        doc.setFillColor(...(i % 2 === 0 ? LGRAY : [255,255,255]));
-        if (isLast) doc.setFillColor(...HGRAY);
+        doc.setFillColor(...(isLast ? HGRAY : (i % 2 === 0 ? LGRAY : [255,255,255])));
         doc.rect(metaX, metaY, metaW * 0.52, metaRowH, "F");
         doc.rect(metaX + metaW * 0.52, metaY, metaW * 0.48, metaRowH, "F");
-        doc.setDrawColor(...BORDER);
-        doc.setLineWidth(0.2);
+        doc.setDrawColor(...BORDER); doc.setLineWidth(0.2);
         doc.rect(metaX, metaY, metaW * 0.52, metaRowH, "S");
         doc.rect(metaX + metaW * 0.52, metaY, metaW * 0.48, metaRowH, "S");
-
-        doc.setFont(FONT, isLast ? "bold" : "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...DKGRAY);
+        doc.setFont(FONT, isLast ? "bold" : "normal"); doc.setFontSize(8.5); doc.setTextColor(...DKGRAY);
         doc.text(row[0], metaX + 3, metaY + metaRowH / 2 + 1.3);
-
-        doc.setFont(FONT, "bold");
-        doc.setTextColor(...NAVY);
+        doc.setFont(FONT, "bold"); doc.setTextColor(...NAVY);
         const valLines = doc.splitTextToSize(row[1], metaW * 0.48 - 6);
         doc.text(valLines[0], metaX + metaW * 0.52 + 3, metaY + metaRowH / 2 + 1.3);
-
         metaY += metaRowH;
     });
-
     y = Math.max(fromY + 11.5 + 3 * 4.2, metaY) + 10;
-
-    // ══════════════════════════════════════════════════════
-    // 3. TO (Bill To) — left block and right contact strip use
-    //    the same fixed row baseline (y+6, +11, +16, +21) so
-    //    nothing drifts out of alignment regardless of text length.
-    // ══════════════════════════════════════════════════════
     const billToTop = y;
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...MGRAY);
-    doc.text("BILL TO", ML, billToTop);
-
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...NAVY);
-    doc.text(invVendorData.vendor_name || "—", ML, billToTop + 6);
-
+    doc.setFont(FONT, "bold"); doc.setFontSize(8.5); doc.setTextColor(...MGRAY); doc.text("BILL TO", ML, billToTop);
+    doc.setFont(FONT, "bold"); doc.setFontSize(9.5); doc.setTextColor(...NAVY); doc.text(invVendorData.vendor_name || "—", ML, billToTop + 6);
     const addrLines = doc.splitTextToSize(invVendorData.company_address || "—", CW * 0.55).slice(0, 2);
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...DKGRAY);
+    doc.setFont(FONT, "normal"); doc.setFontSize(8.5); doc.setTextColor(...DKGRAY);
     doc.text(addrLines, ML, billToTop + 11, { lineHeightFactor: 1.35 });
-
     const emailRowY = billToTop + 11 + addrLines.length * 4;
     doc.text(String(invVendorData.email || "—"), ML, emailRowY);
-
-    // Right-aligned contact strip — same starting row as vendor name (y+6)
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...DKGRAY);
+    doc.setFont(FONT, "normal"); doc.setFontSize(8.5); doc.setTextColor(...DKGRAY);
     doc.text("Contact: " + (invVendorData.contact_person || "—"), PW - MR, billToTop + 6, { align: "right" });
     doc.text("Mobile: " + (invVendorData.mobile || "—"), PW - MR, billToTop + 11, { align: "right" });
     doc.text("PAN: " + (invVendorData.pan || "—"), PW - MR, billToTop + 16, { align: "right" });
-    if (invVendorData.gst) {
-        doc.text("GST: " + invVendorData.gst, PW - MR, billToTop + 21, { align: "right" });
-    }
-
-    // Next section starts below whichever column (left or right) is taller
-    const leftBottom  = emailRowY;
-    const rightBottom = billToTop + (invVendorData.gst ? 21 : 16);
-    y = Math.max(leftBottom, rightBottom) + 10;
-
-    // ══════════════════════════════════════════════════════
-    // 4. SERVICE TABLE
-    // ══════════════════════════════════════════════════════
+    if (invVendorData.gst) doc.text("GST: " + invVendorData.gst, PW - MR, billToTop + 21, { align: "right" });
+    y = Math.max(emailRowY, billToTop + (invVendorData.gst ? 21 : 16)) + 10;
     doc.autoTable({
-        startY: y,
-        margin: { left: ML, right: MR },
+        startY: y, margin: { left: ML, right: MR },
         head: [["Hrs/Qty", "Service", "Rate", "Tax %", "Sub Total"]],
-        body: [[
-            String(qty),
-            desc + "\n" + fmtDate(fromDate) + " to " + fmtDate(toDate),
-            fmtR(rate),
-            (cgstPct + sgstPct).toFixed(2) + "%",
-            fmtR(amount),
-        ]],
+        body: [[String(qty), desc + "\n" + fmtD(fromDate) + " to " + fmtD(toDate), fmtR(rate), (cgstPct + sgstPct).toFixed(2) + "%", fmtR(amount)]],
         styles: { font: FONT, fontSize: 9, cellPadding: { top: 4, bottom: 4, left: 4, right: 4 }, textColor: DKGRAY },
         headStyles: { fillColor: NAVY, textColor: 255, fontStyle: "bold", fontSize: 8.5 },
-        columnStyles: {
-            0: { cellWidth: 18, halign: "center" },
-            1: { cellWidth: 80, halign: "left" },
-            2: { cellWidth: 26, halign: "right" },
-            3: { cellWidth: 18, halign: "center" },
-            4: { cellWidth: 32, halign: "right", fontStyle: "bold" },
-        },
-        tableLineColor: BORDER,
-        tableLineWidth: 0.2,
-        alternateRowStyles: { fillColor: [255,255,255] },
+        columnStyles: { 0: { cellWidth: 18, halign: "center" }, 1: { cellWidth: 80, halign: "left" }, 2: { cellWidth: 26, halign: "right" }, 3: { cellWidth: 18, halign: "center" }, 4: { cellWidth: 32, halign: "right", fontStyle: "bold" } },
+        tableLineColor: BORDER, tableLineWidth: 0.2, alternateRowStyles: { fillColor: [255,255,255] },
     });
-
     y = doc.lastAutoTable.finalY + 6;
-
-    // ══════════════════════════════════════════════════════
-    // 5. TOTALS — right-aligned compact table
-    // ══════════════════════════════════════════════════════
-    const totW = 70;
-    const totX = PW - MR - totW;
+    const totW = 70; const totX = PW - MR - totW;
     doc.autoTable({
-        startY: y,
-        margin: { left: totX, right: MR },
-        tableWidth: totW,
-        body: [
-            ["Sub Total", fmtR(amount)],
-            ["CGST @ " + cgstPct + "%", fmtR(cgstAmt)],
-            ["SGST @ " + sgstPct + "%", fmtR(sgstAmt)],
-        ],
+        startY: y, margin: { left: totX, right: MR }, tableWidth: totW,
+        body: [["Sub Total", fmtR(amount)],["CGST @ " + cgstPct + "%", fmtR(cgstAmt)],["SGST @ " + sgstPct + "%", fmtR(sgstAmt)]],
         foot: [["Total", fmtR(grandTotal)]],
         styles: { font: FONT, fontSize: 9, cellPadding: { top: 3.2, bottom: 3.2, left: 4, right: 4 }, textColor: DKGRAY },
         columnStyles: { 0: { halign: "left", cellWidth: 38 }, 1: { halign: "right", cellWidth: 32, fontStyle: "bold" } },
         footStyles: { fillColor: HGRAY, textColor: NAVY, fontStyle: "bold", fontSize: 10 },
-        theme: "plain",
-        tableLineColor: BORDER,
-        tableLineWidth: 0.2,
-        didParseCell: (data) => {
-            if (data.section === "body") {
-                data.cell.styles.lineWidth = { bottom: 0.15 };
-                data.cell.styles.lineColor = BORDER;
-            }
-        },
+        theme: "plain", tableLineColor: BORDER, tableLineWidth: 0.2,
+        didParseCell: (data) => { if (data.section === "body") { data.cell.styles.lineWidth = { bottom: 0.15 }; data.cell.styles.lineColor = BORDER; } },
     });
-
     y = doc.lastAutoTable.finalY + 12;
-
-    // ══════════════════════════════════════════════════════
-    // 6. BANK DETAILS (bottom-left, simple text block —
-    //    matches the plain "ANZ Bank / ACC # / BSB #" style)
-    // ══════════════════════════════════════════════════════
-    doc.setFont(FONT, "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...MGRAY);
-    doc.text("PAYMENT DETAILS", ML, y);
-
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...DKGRAY);
-    doc.text([
-        (invVendorData.bank_name || "—") + (invVendorData.branch_name ? " — " + invVendorData.branch_name : ""),
-        "A/C Holder: " + (invVendorData.account_holder || "—"),
-        "A/C Number: " + (invVendorData.account_number || "—"),
-        "IFSC: " + (invVendorData.ifsc || "—"),
-    ], ML, y + 5.5, { lineHeightFactor: 1.5 });
-
-    // ══════════════════════════════════════════════════════
-    // 7. SIGNATURE (bottom-right, simple)
-    // ══════════════════════════════════════════════════════
-    const sigW = 60;
-    const sigX = PW - MR - sigW;
-    let sigY = y + 22;
-
-    doc.setDrawColor(...DKGRAY);
-    doc.setLineWidth(0.3);
-    doc.line(sigX, sigY, sigX + sigW, sigY);
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...MGRAY);
+    doc.setFont(FONT, "bold"); doc.setFontSize(8.5); doc.setTextColor(...MGRAY); doc.text("PAYMENT DETAILS", ML, y);
+    doc.setFont(FONT, "normal"); doc.setFontSize(8.5); doc.setTextColor(...DKGRAY);
+    doc.text([(invVendorData.bank_name || "—") + (invVendorData.branch_name ? " — " + invVendorData.branch_name : ""),"A/C Holder: " + (invVendorData.account_holder || "—"),"A/C Number: " + (invVendorData.account_number || "—"),"IFSC: " + (invVendorData.ifsc || "—")], ML, y + 5.5, { lineHeightFactor: 1.5 });
+    const sigW = 60; const sigX = PW - MR - sigW; let sigY = y + 22;
+    doc.setDrawColor(...DKGRAY); doc.setLineWidth(0.3); doc.line(sigX, sigY, sigX + sigW, sigY);
+    doc.setFont(FONT, "normal"); doc.setFontSize(8); doc.setTextColor(...MGRAY);
     doc.text("Authorised Signatory", sigX + sigW / 2, sigY + 5, { align: "center" });
-
-    // ══════════════════════════════════════════════════════
-    // 8. FOOTER NOTE — pinned near bottom of the single page
-    // ══════════════════════════════════════════════════════
     const footY = PH - 22;
-    doc.setDrawColor(...BORDER);
-    doc.setLineWidth(0.2);
-    doc.line(ML, footY - 6, PW - MR, footY - 6);
-
-    doc.setFont(FONT, "normal");
-    doc.setFontSize(7.5);
-    doc.setTextColor(...MGRAY);
-    doc.text("This is a computer-generated invoice from the Vendor Registration Portal of The Ma Foi Foundation.",
-        PW / 2, footY, { align: "center" });
-    doc.text("Generated on " + new Date().toLocaleString("en-IN") + "   |   Page 1/1",
-        PW / 2, footY + 5, { align: "center" });
-
-    // ══════════════════════════════════════════════════════
-    // SAVE
-    // ══════════════════════════════════════════════════════
+    doc.setDrawColor(...BORDER); doc.setLineWidth(0.2); doc.line(ML, footY - 6, PW - MR, footY - 6);
+    doc.setFont(FONT, "normal"); doc.setFontSize(7.5); doc.setTextColor(...MGRAY);
+    doc.text("This is a computer-generated invoice from the Vendor Registration Portal of The Ma Foi Foundation.", PW / 2, footY, { align: "center" });
+    doc.text("Generated on " + new Date().toLocaleString("en-IN") + "   |   Page 1/1", PW / 2, footY + 5, { align: "center" });
     const safeName = (invVendorData.vendor_name || "Vendor").replace(/[^a-zA-Z0-9]/g, "");
     const fileName = "Invoice_" + safeName + "_" + invNumber + ".pdf";
     doc.save(fileName);
-
-    // ── Persist to Supabase ────────────────────────────────
-    await db.from("invoices").insert([{
-        vendor_id:           invVendorData.id,
-        invoice_number:      invNumber,
-        invoice_date:        invDate,
-        from_date:           fromDate,
-        to_date:             toDate,
-        service_description: desc,
-        quantity:            qty,
-        rate:                rate,
-        amount:              amount,
-        cgst_percentage:     cgstPct,
-        cgst_amount:         cgstAmt,
-        sgst_percentage:     sgstPct,
-        sgst_amount:         sgstAmt,
-        total_amount:        grandTotal,
-    }]);
-
+    await db.from("invoices").insert([{ vendor_id: invVendorData.id, invoice_number: invNumber, invoice_date: invDate, from_date: fromDate, to_date: toDate, service_description: desc, quantity: qty, rate, amount, cgst_percentage: cgstPct, cgst_amount: cgstAmt, sgst_percentage: sgstPct, sgst_amount: sgstAmt, total_amount: grandTotal }]);
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Generate Invoice PDF';
     document.getElementById("invSuccessFilename").textContent = fileName;
@@ -1388,9 +945,7 @@ async function generateInvoicePDF() {
     confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } });
 }
 
-// ═══════════════════════════════════════════════════════════
-// EXCEL DOWNLOAD
-// ═══════════════════════════════════════════════════════════
+// ── EXCEL DOWNLOAD ──────────────────────────────────────────
 function verifyAndDownload() {
     resetPwdModal();
     const modal = new bootstrap.Modal(document.getElementById("passwordModal"));
@@ -1401,13 +956,8 @@ function verifyAndDownload() {
 function togglePwdVisibility() {
     const input = document.getElementById("pwdInput");
     const icon  = document.getElementById("pwdToggleIcon");
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.replace("bi-eye", "bi-eye-slash");
-    } else {
-        input.type = "password";
-        icon.classList.replace("bi-eye-slash", "bi-eye");
-    }
+    if (input.type === "password") { input.type = "text"; icon.classList.replace("bi-eye", "bi-eye-slash"); }
+    else { input.type = "password"; icon.classList.replace("bi-eye-slash", "bi-eye"); }
 }
 
 function resetPwdModal() {
@@ -1424,24 +974,16 @@ async function submitPassword() {
     const pwd   = document.getElementById("pwdInput").value;
     const errEl = document.getElementById("pwdError");
     const btn   = document.getElementById("pwdSubmitBtn");
-
-    if (!pwd) {
-        errEl.classList.add("show");
-        errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Please enter the password.';
-        return;
-    }
-
+    if (!pwd) { errEl.classList.add("show"); errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Please enter the password.'; return; }
     if (pwd !== "TMF@2026") {
-        errEl.classList.add("show");
-        errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.';
+        errEl.classList.add("show"); errEl.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.';
         document.getElementById("pwdInput").value = "";
         document.getElementById("pwdInput").focus();
         const input = document.getElementById("pwdInput");
-        input.style.borderColor = "#dc3545";
+        input.style.borderColor = "#dc2626";
         setTimeout(() => { input.style.borderColor = ""; }, 1500);
         return;
     }
-
     errEl.classList.remove("show");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Downloading...';
@@ -1450,104 +992,28 @@ async function submitPassword() {
     await downloadExcel();
 }
 
-// Columns that must always be stored as TEXT in the workbook so Excel
-// never reformats them as numbers (which silently strips leading zeros,
-// e.g. account numbers, or applies scientific notation to long digit strings).
 const TEXT_COLUMNS = ["Mobile", "Alternate Mobile", "PAN", "GST", "Account Number", "IFSC"];
 
 async function downloadExcel() {
     const { data, error } = await db.from("vendors").select("*").order("id", { ascending: false });
     if (error) { console.error(error); alert("Failed to fetch data"); return; }
-
-    const headers = [
-        "ID","Vendor Name","Contact Person","Company Address","Email","Mobile",
-        "Alternate Mobile","PAN","GST","Service","Account Number","Account Holder",
-        "Bank Name","IFSC","Branch Name","Agreement Date","Agreement Validity",
-        "PAN File","GST File","Agreement File"
-    ];
-
-    const rows = (data || []).map(v => ([
-        v.id,
-        v.vendor_name,
-        v.contact_person,
-        v.company_address,
-        v.email,
-        v.mobile,
-        v.alternate_mobile,
-        v.pan,
-        v.gst,
-        Array.isArray(v.service) ? v.service.join("; ") : v.service,
-        v.account_number,
-        v.account_holder,
-        v.bank_name,
-        v.ifsc,
-        v.branch_name,
-        v.agreement_date,
-        v.agreement_validity,
-        v.pan_file,
-        v.gst_file,
-        v.agreement_file
-    ]));
-
+    const headers = ["ID","Vendor Name","Contact Person","Company Address","Email","Mobile","Alternate Mobile","PAN","GST","Service","Account Number","Account Holder","Bank Name","IFSC","Branch Name","Agreement Date","Agreement Validity","PAN File","GST File","Agreement File"];
+    const rows = (data || []).map(v => ([v.id, v.vendor_name, v.contact_person, v.company_address, v.email, v.mobile, v.alternate_mobile, v.pan, v.gst, Array.isArray(v.service) ? v.service.join("; ") : v.service, v.account_number, v.account_holder, v.bank_name, v.ifsc, v.branch_name, v.agreement_date, v.agreement_validity, v.pan_file, v.gst_file, v.agreement_file]));
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-
     const textColIndexes = TEXT_COLUMNS.map(name => headers.indexOf(name));
     const range = XLSX.utils.decode_range(ws['!ref']);
-
     for (let r = 1; r <= range.e.r; r++) {
         textColIndexes.forEach(c => {
             const ref = XLSX.utils.encode_cell({ r, c });
             const cell = ws[ref];
-            if (cell) {
-                cell.v = (cell.v === null || cell.v === undefined) ? "" : String(cell.v);
-                cell.t = 's';
-                cell.z = '@';
-            }
+            if (cell) { cell.v = (cell.v === null || cell.v === undefined) ? "" : String(cell.v); cell.t = 's'; cell.z = '@'; }
         });
     }
-
     ws['!cols'] = headers.map(h => ({ wch: Math.max(14, h.length + 4) }));
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Vendors");
     XLSX.writeFile(wb, "vendors.xlsx");
 }
 </script>
-
-
-<!-- Password Modal for Excel Download -->
-<div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
-        <div class="modal-content border-0 shadow-lg p-4" style="border-radius:20px;">
-
-            <div class="pwd-modal-icon">
-                <i class="bi bi-lock-fill"></i>
-            </div>
-
-            <h5 class="text-center fw-bold mb-1" style="color:#1e3d6c;">Admin Access Required</h5>
-            <p class="text-center text-muted small mb-4">Enter the TMF Admin Password to download vendor data.</p>
-
-            <div class="pwd-input-wrap mb-1">
-                <input type="password" class="form-control" id="pwdInput" placeholder="Enter password"
-                    onkeydown="if(event.key==='Enter') submitPassword()">
-                <i class="bi bi-eye pwd-toggle" id="pwdToggleIcon" onclick="togglePwdVisibility()"></i>
-            </div>
-            <div id="pwdError">
-                <i class="bi bi-exclamation-circle me-1"></i>Incorrect password. Please try again.
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-                <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal" onclick="resetPwdModal()">
-                    Cancel
-                </button>
-                <button class="btn btn-primary flex-fill" id="pwdSubmitBtn" onclick="submitPassword()">
-                    <i class="bi bi-download me-2"></i>Download
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
 </body>
 </html>
